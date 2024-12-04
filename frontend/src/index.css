@@ -1,0 +1,9 @@
+* {
+    transition: 0.15s ease;
+    font-family: 'Kanit', sans-serif;
+}
+
+.hov:hover {
+    transform: scale(1.02);
+    cursor: pointer;
+}
