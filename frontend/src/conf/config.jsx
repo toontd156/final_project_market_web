@@ -1,6 +1,6 @@
 
 const config = {
-    api_url: 'http://localhost:3333',
+    api_url: 'https://final-project-market-web.onrender.com',
     data_shop_type : [
         {
             id: 1,
