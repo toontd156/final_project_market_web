@@ -7,6 +7,7 @@ import arrow_down from '../assets/arrow_down.png'
 import icon_logout from '../assets/icon_logout.png'
 import { jwtDecode } from "jwt-decode";
 import checkToken from '../func/CheckToken'
+import calculatorWidthAndHeight from "../func/CalculatorWidthAndHeight";
 
 import '../index.css'
 function NavBar() {
@@ -43,8 +44,8 @@ function NavBar() {
     <>
       <div className="container-fluid m-0 p-0 " style={{ background: '#727D71' }}>
         <div className="w-100 d-flex align-items-center justify-content-between p-3 shadow-sm text-dark">
-          <div className="d-flex align-items-center justify-content-start w-50" style={{ gap: '12px' }}>
-            <div className="d-flex align-items-center justify-content-center hov" style={{ maxHeight: '32px', maxWidth: '52px' }} onClick={(e) => {
+          <div className="d-flex align-items-center justify-content-start w-50" style={{ gap: calculatorWidthAndHeight(12) }}>
+            <div className="d-flex align-items-center justify-content-center hov" style={{ maxHeight: calculatorWidthAndHeight(32), maxWidth: calculatorWidthAndHeight(52) }} onClick={(e) => {
               navigate('/')
 
             }}>
@@ -56,7 +57,7 @@ function NavBar() {
           </div>
           {
             isLogin ? (
-              <div className="d-flex align-items-center justify-content-end text-white" style={{ gap: '14px' }}>
+              <div className="d-flex align-items-center justify-content-end text-white" style={{ gap: calculatorWidthAndHeight(14) }}>
                 {/* <div className="d-flex align-items-center justify-content-center hov" onClick={(e) => {
                   if (isLogin === 'admin') {
                     navigate('/ManageRequest')
@@ -64,7 +65,7 @@ function NavBar() {
                     navigate('/RequestStatus')
                   }
                 }}>
-                  <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>STATUS</span>
+                  <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>STATUS</span>
                 </div> */}
                 {
                   isLogin === 'user' ? (
@@ -73,7 +74,7 @@ function NavBar() {
                    
                           navigate('/RequestStatus')
                       }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>STATUS</span>
+                        <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: `${calculatorWidthAndHeight(1)} solid #EAE0D5` }}>STATUS</span>
                       </div>
                     </>
                   ) : null
@@ -84,27 +85,27 @@ function NavBar() {
                       <div className="d-flex align-items-center justify-content-center hov" onClick={(e) => {
                         navigate('/')
                       }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>DASHBOARD</span>
+                        <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: `${calculatorWidthAndHeight(1)} solid #EAE0D5` }}>DASHBOARD</span>
                       </div>
                       <div className="d-flex align-items-center justify-content-center hov" onClick={(e) => {
                         navigate('/ManageRequest')
                       }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>PAYMENT CONFIRMATION</span>
+                        <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: `${calculatorWidthAndHeight(1)} solid #EAE0D5` }}>PAYMENT CONFIRMATION</span>
                       </div>
                       <div className="d-flex align-items-center justify-content-center hov" onClick={(e) => {
                         navigate('/RequestHistory')
                       }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>CONFIRMATION HISTORY</span>
+                        <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: `${calculatorWidthAndHeight(1)} solid #EAE0D5` }}>CONFIRMATION HISTORY</span>
                       </div>
                       <div className="d-flex align-items-center justify-content-center hov" onClick={(e) => {
                         navigate('/SetRent')
                       }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>MANAGE AREA</span>
+                        <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: `${calculatorWidthAndHeight(1)} solid #EAE0D5` }}>MANAGE AREA</span>
                       </div>
                       <div className="d-flex align-items-center justify-content-center hov" onClick={(e) => {
                         navigate('/ManageUser')
                       }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, borderBottom: '1px solid #EAE0D5' }}>MANAGE USER</span>
+                        <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500, borderBottom: `${calculatorWidthAndHeight(1)} solid #EAE0D5` }}>MANAGE USER</span>
                       </div>
                     </>
                   ) : null
@@ -113,12 +114,12 @@ function NavBar() {
 
                 <div className="d-flex px-1 py-1 align-items-center gap-1" onClick={(e) => {
                   setDropdown(!dropdown)
-                }} style={{ borderRadius: '2px', border: '2px solid #EAE0D5' }}>
-                  <div className="d-flex align-items-center justify-content-center hov p-2" style={{ gap: '4px', borderRadius: '2px', background: '#6D4C3D' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 500 }}>{isLogin.toLocaleUpperCase()}</span>
-                    <img src={icon_user} alt="" style={{ width: '21px', height: '19px' }} />
+                }} style={{ borderRadius: calculatorWidthAndHeight(2), border: `${calculatorWidthAndHeight(2)} solid #EAE0D5` }}>
+                  <div className="d-flex align-items-center justify-content-center hov p-2" style={{ gap: calculatorWidthAndHeight(4), borderRadius: calculatorWidthAndHeight(2), background: '#6D4C3D' }}>
+                    <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500 }}>{isLogin.toLocaleUpperCase()}</span>
+                    <img src={icon_user} alt="" style={{ width: calculatorWidthAndHeight(21), height: calculatorWidthAndHeight(19) }} />
                   </div>
-                  <img src={arrow_down} alt="" style={{ width: '15px', height: '12px' }} />
+                  <img src={arrow_down} alt="" style={{ width: calculatorWidthAndHeight(15), height: calculatorWidthAndHeight(12) }} />
 
                   {
                     dropdown ? (
@@ -126,14 +127,14 @@ function NavBar() {
                         <div className="d-flex align-items-center justify-content-start w-100 gap-2" onClick={(e) => {
                           navigate('/Edit')
                         }}>
-                          <img src={icon_logout} alt="" style={{ width: '12px', height: '14px' }} />
-                          <span className='hov' style={{ fontSize: '14px', color: 'red', fontWeight: 500 }}>Edit</span>
+                          <img src={icon_logout} alt="" style={{ width: calculatorWidthAndHeight(12), height: calculatorWidthAndHeight(14) }} />
+                          <span className='hov' style={{ fontSize: calculatorWidthAndHeight(14), color: 'red', fontWeight: 500 }}>Edit</span>
                         </div>
                         <div className="d-flex align-items-center justify-content-start w-100 gap-2" onClick={(e) => {
                           logout()
                         }}>
-                          <img src={icon_logout} alt="" style={{ width: '12px', height: '14px' }} />
-                          <span className='hov' style={{ fontSize: '14px', color: 'red', fontWeight: 500 }}>Logout</span>
+                          <img src={icon_logout} alt="" style={{ width: calculatorWidthAndHeight(12), height: calculatorWidthAndHeight(14) }} />
+                          <span className='hov' style={{ fontSize: calculatorWidthAndHeight(14), color: 'red', fontWeight: 500 }}>Logout</span>
                         </div>
                       </div>
                     ) : null
@@ -145,13 +146,13 @@ function NavBar() {
               <div className="d-flex align-items-center justify-content-end text-white p-1  " style={{ border: '0.2vh solid #fff', borderRadius: '0.2vh' }} onClick={(e) => {
                 window.location.pathname === '/Login' ? navigate('/') : navigate('/Login')
               }}>
-                <div className="d-flex align-items-center justify-content-center hov w-100 h-100 px-4 p-1 " style={{ gap: '4px', background: '#6D4C3D', borderRadius: '0.2vh' }}>
+                <div className="d-flex align-items-center justify-content-center hov w-100 h-100 px-4 p-1 " style={{ gap: calculatorWidthAndHeight(4), background: '#6D4C3D', borderRadius: '0.2vh' }}>
                   {/* {
                     window.location.pathname === '/Login' ? null : (
                       <img src={icon_login} alt="" style={{ width: '21px', height: '19px' }} />
                     )
                   } */}
-                  <span style={{ fontSize: '14px', fontWeight: 500 }}>{window.location.pathname === '/Login' ? 'HOME' : 'LOGIN'}</span>
+                  <span style={{ fontSize: calculatorWidthAndHeight(14), fontWeight: 500 }}>{window.location.pathname === '/Login' ? 'HOME' : 'LOGIN'}</span>
                 </div>
               </div>
 

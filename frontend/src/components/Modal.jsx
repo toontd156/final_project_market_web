@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import calculatorWidthAndHeight from "../func/CalculatorWidthAndHeight";
 function Modal({ isOpen, onClose, title, children, custom_max_width, custom_footer }) {
   const [open, setOpen] = useState(isOpen);
   const handleClose = () => {
@@ -14,7 +14,7 @@ function Modal({ isOpen, onClose, title, children, custom_max_width, custom_foot
     >
       <div
         className="modal-dialog modal-dialog-centered"
-        style={{ maxWidth: custom_max_width ? `${custom_max_width}` : '600px' }}
+        style={{ maxWidth: custom_max_width ? `${custom_max_width}` : calculatorWidthAndHeight(600) }}
       >
         <div className="modal-content"  >
           <div className="modal-header">

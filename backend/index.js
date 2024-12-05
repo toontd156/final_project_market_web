@@ -23,6 +23,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const upload = multer({ storage: storage });
 
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
+
 app.post('/api/signup', (req, res) => {
     const { fullname, email, password, phone } = req.body;
     const queryCheck = `SELECT email, phone FROM users WHERE email = ? AND phone = ?`;
@@ -97,7 +101,6 @@ app.get('/api/get_area', (req, res) => {
         if (err) {
             res.status(500).send({ status: false, message: err });
         }
-        console.log(result);
         res.status(200).send({ status: true, data: result });
     });
 });
@@ -150,13 +153,13 @@ app.post('/api/payment_zone', upload.single('file'), (req, res) => {
     });
 
 
-    const queryUpdateRent = `UPDATE data_zone SET rent = 1 WHERE id = ?`;
-    connection.query(queryUpdateRent, [zoneId], (err, result) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).send({ status: false, message: 'Database Error', error: err });
-        }
-    });
+    // const queryUpdateRent = `UPDATE data_zone SET rent = 1 WHERE id = ?`;
+    // connection.query(queryUpdateRent, [zoneId], (err, result) => {
+    //     if (err) {
+    //         console.error(err);
+    //         return res.status(500).send({ status: false, message: 'Database Error', error: err });
+    //     }
+    // });
     res.status(200).send({ status: true, message: 'Request success' });
 
 });
@@ -344,8 +347,8 @@ app.post('/api/insert_rent', (req, res) => {
             if (result2.length > 0) {
                 res.status(400).send({ status: false, message: 'Zone already exist' });
             } else {
-                const query = `INSERT INTO data_zone (price, rent, size_market, name_zone, category_id, toggle) VALUES (?, ?, ?, ?, ?, ?)`;
-                connection.query(query, [price, rent, size, name_zone, result[0].id, toggle], (err, result) => {
+                const query = `INSERT INTO data_zone (price, size_market, name_zone, category_id, toggle) VALUES (?, ?, ?, ?, ?, ?)`;
+                connection.query(query, [price,  size, name_zone, result[0].id, toggle], (err, result) => {
                     if (err) {
                         res.status(500).send({ status: false, message: err });
                     }
@@ -377,8 +380,8 @@ app.post('/api/update_rent', (req, res) => {
             res.status(500).send({ status: false, message: `1 ${err}` });
         }
         console.log(price, parseInt(rent), size, name_zone, result[0].id, id);
-        const queryUpdate = `UPDATE data_zone SET price = ?, rent = ?, size_market = ?, name_zone = ?, category_id = ?, toggle = ?, \`update\` = NOW()  WHERE id = ?`;
-        connection.query(queryUpdate, [price, parseInt(rent), size, name_zone, result[0].id, toggle, id], (err, result) => {
+        const queryUpdate = `UPDATE data_zone SET price = ?, size_market = ?, name_zone = ?, category_id = ?, toggle = ?, \`update\` = NOW()  WHERE id = ?`;
+        connection.query(queryUpdate, [price, size, name_zone, result[0].id, toggle, id], (err, result) => {
             if (err) {
                 res.status(500).send({ status: false, message: err });
             }
@@ -437,13 +440,13 @@ app.post('/api/cancel_request', async (req, res) => {
             });
         });
 
-        const queryUpdateRent = `UPDATE data_zone SET rent = 2 WHERE id = ?`;
-        await new Promise((resolve, reject) => {
-            connection.query(queryUpdateRent, [idZone], (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-            });
-        });
+        // const queryUpdateRent = `UPDATE data_zone SET rent = 2 WHERE id = ?`;
+        // await new Promise((resolve, reject) => {
+        //     connection.query(queryUpdateRent, [idZone], (err, result) => {
+        //         if (err) reject(err);
+        //         else resolve(result);
+        //     });
+        // });
         res.status(200).send({ status: true, message: 'Cancel success' });
     } catch (error) {
         console.error(error);
@@ -493,13 +496,13 @@ app.post('/api/approve_request', async (req, res) => {
             });
         });
 
-        const queryUpdateRent = `UPDATE data_zone SET rent = 0 WHERE id = ?`;
-        await new Promise((resolve, reject) => {
-            connection.query(queryUpdateRent, [idZone], (err, result) => {
-                if (err) reject(err);
-                else resolve(result);
-            });
-        });
+        // const queryUpdateRent = `UPDATE data_zone SET rent = 0 WHERE id = ?`;
+        // await new Promise((resolve, reject) => {
+        //     connection.query(queryUpdateRent, [idZone], (err, result) => {
+        //         if (err) reject(err);
+        //         else resolve(result);
+        //     });
+        // });
 
 
 

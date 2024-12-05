@@ -7,6 +7,8 @@ import Modal from "../../components/Modal";
 import icon_all_user from '../../assets/icon_all_user.png'
 import icon_all_admin from '../../assets/icon_all_admin.png'
 import checkToken from '../../func/CheckToken';
+import config from '../../conf/config';
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
 
 function ManageUser() {
     const [searchInput, setSearchInput] = useState('');
@@ -76,7 +78,7 @@ function ManageUser() {
     const checkUser = async () => {
         checkMyToken();
         try {
-            const response = await axios.get('http://localhost:3333/api/user_all')
+            const response = await axios.get(config.api_url + '/api/user_all')
             const result = response.data
             if (result.status) {
                 setDataUser(result.data)
@@ -194,7 +196,7 @@ function ManageUser() {
     const action_add = async (data) => {
         checkMyToken();
         try {
-            const response = await axios.post('http://localhost:3333/api/add_user_with_admin', data)
+            const response = await axios.post(config.api_url + '/api/add_user_with_admin', data)
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -222,7 +224,7 @@ function ManageUser() {
     const action_edit = async (data) => {
         checkMyToken();
         try {
-            const response = await axios.post('http://localhost:3333/api/edit_user_with_admin', data)
+            const response = await axios.post(config.api_url + '/api/edit_user_with_admin', data)
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -248,6 +250,14 @@ function ManageUser() {
     }
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'admin') {
+            navigate(-1)
+            return
+        }
         checkUser()
     }, [])
 
@@ -266,7 +276,7 @@ function ManageUser() {
                             <div className="col-12 d-flex flex-column align-items-start justify-content-start h-100 p-1 rounded" style={{ gap: '0.4vh' }}>
                                 <div className="d-flex flex-column align-items-center justify-content-start w-100" style={{ gap: '0.4vh' }}>
                                     <div className="d-flex align-items-center justify-content-between w-100">
-                                        <span className="text-start w-100" style={{ fontSize: '22px', fontWeight: 500 }}>MANAGE USER</span>
+                                        <span className="text-start w-100" style={{ fontSize: calculatorWidthAndHeight(22), fontWeight: 500 }}>MANAGE USER</span>
                                         <div className="d-flex align-items-center justify-content-end form-group w-50" style={{gap: '0.7vh'}}>
                                             <input type="text" placeholder='Search A' className="form-control" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} style={{ width: '30vh' }} />
                                             <div className="d-flex align-items-center justify-content-between ">

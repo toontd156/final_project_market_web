@@ -14,9 +14,10 @@ import icon_check_payment from '../../assets/icon_check_payment.png';
 import icon_edit_user from '../../assets/icon_edit_user.png';
 import icon_history from '../../assets/icon_history.png';
 import icon_manage_ads from '../../assets/icon_manage_ads.png';
-import data_shop_type from '../../conf/config';
+import config from '../../conf/config';
 import checkToken from '../../func/CheckToken';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, FinancialPlugin);
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
 
 import '../../index.css';
 import bg_home from '../../assets/bg_home.png';
@@ -109,7 +110,7 @@ function Home() {
     const fetchDataForChart = async (date) => {
         let date_is_coming = date.replace(/\//g, "-");
         try {
-            const response = await axios.get('http://localhost:3333/api/getDataForChart', {
+            const response = await axios.get(config.api_url + '/api/getDataForChart', {
                 params: { date_is_coming }
             });
 
@@ -137,7 +138,7 @@ function Home() {
 
     const fetchDataDashboard = async () => {
         try {
-            const response = await axios.get('http://localhost:3333/api/get_data_ads');
+            const response = await axios.get(config.api_url + '/api/get_data_ads');
             console.log('response.data.data:', response.data.data);
             setDataDashboard(response.data.data);
         } catch (error) {
@@ -147,7 +148,7 @@ function Home() {
 
     const fetchFinancialData = async () => {
         try {
-            const response = await axios.get('http://localhost:3333/api/getFinancialData', {
+            const response = await axios.get(config.api_url + '/api/getFinancialData', {
                 params: { typeChart }
             });
 
@@ -231,7 +232,7 @@ function Home() {
         let date = original_date.replace(/\//g, "-");
 
         try {
-            const response = await axios.post('http://localhost:3333/api/get_market_on_event', { date });
+            const response = await axios.post(config.api_url + '/api/get_market_on_event', { date });
             const result = response.data
             if (result.status) {
                 setDataShop(result.data)
@@ -275,22 +276,22 @@ function Home() {
             roleIsLogin === 'user' ? (
                 <div className="container-fluid h-100" style={{ background: `url(${bg_home})`, backgroundSize: 'cover' }}>
                     <div className="d-flex flex-column align-items-center justify-content-center w-100 h-100">
-                        <div className=" row g-0 w-100" style={{ height: '69vh' }}>
-                            <div className="col-4 d-flex align-items-center justify-content-center h-100">
+                        <div className=" row g-0 w-100" style={{ }}>
+                            <div className="col-sm-4 col-12 d-flex align-items-center justify-content-center h-100">
                                 <img src={image_map} alt="" className="w-100 h-100 image-fluid" style={{ objectFit: 'contain' }} />
                             </div>
                             <div className="col d-flex flex-column align-items-center justify-content-center h-100">
                                 <div className="d-flex flex-column align-items-start justify-content-evenly h-75 w-100">
-                                    <div className="d-flex flex-column align-items-start justify-content-start rounded px-5" style={{ gap: '8px' }}>
-                                        <span style={{ fontSize: '60px', fontWeight: 800, color: '#6D4C3D', textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}>Upcoming market <br /> days : {nowDate}</span>
-                                        <span style={{ fontSize: '60px', fontWeight: 800, color: '#6D4C3D', textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}>COUNTDOWN</span>
+                                    <div className="d-flex flex-column align-items-start justify-content-start rounded px-5" style={{ gap: calculatorWidthAndHeight(8) }}>
+                                        <span style={{ fontSize: calculatorWidthAndHeight(60), fontWeight: 800, color: '#6D4C3D', textShadow: `0 ${calculatorWidthAndHeight(4)} ${calculatorWidthAndHeight(4)} rgba(0, 0, 0, 0.25)` }}>Upcoming market <br /> days : {nowDate}</span>
+                                        <span style={{ fontSize: calculatorWidthAndHeight(60), fontWeight: 800, color: '#6D4C3D', textShadow: `0 ${calculatorWidthAndHeight(4)} ${calculatorWidthAndHeight(4)} rgba(0, 0, 0, 0.25)` }}>COUNTDOWN</span>
                                         <div className="p-1 px-3" style={{ background: '#A4C3B2', borderRadius: '0.2vh' }}>
-                                            <span style={{ fontSize: '34px', fontWeight: 800 }}>{countdown}</span>
+                                            <span style={{ fontSize: calculatorWidthAndHeight(34), fontWeight: 800 }}>{countdown}</span>
                                         </div>
                                         <button className='btn  px-4' onClick={(e) => {
                                             let date_is_coming = nowDate.replace(/\//g, "-");
                                             navigate(`/RequestZone`, { state: { date_is_coming } })
-                                        }} style={{ fontSize: '34px', fontWeight: 800, color: '#fff', background: '#6D4C3D', border: '2px solid #000', borderRadius: '5px' }}>BOOKING</button>
+                                        }} style={{ fontSize: calculatorWidthAndHeight(34), fontWeight: 800, color: '#fff', background: '#6D4C3D', border: `${calculatorWidthAndHeight(2)} solid #000`, borderRadius: calculatorWidthAndHeight(5) }}>BOOKING</button>
                                     </div>
 
                                 </div>
@@ -300,15 +301,15 @@ function Home() {
                             {
                                 data_dashboard.filter((item) => item.status_open === 1).map((item, index) => {
                                     return (
-                                        <div className="d-flex align-items-center justify-content-between p-2" key={index} style={{ flex: 1, height: '180px', background: index % 2 === 0 ? '#A4C3B2' : '#EAE0D5' }}>
+                                        <div className="d-flex align-items-center justify-content-between p-2" key={index} style={{ flex: 1, height: calculatorWidthAndHeight(180), background: index % 2 === 0 ? '#A4C3B2' : '#EAE0D5' }}>
                                             <div className="w-50 h-100 d-flex flex-column align-items-center justify-content-center">
-                                                <span style={{ fontSize: '24px', fontWeight: 800, height: '70px' }}>{item.name_ads}</span>
+                                                <span style={{ fontSize: calculatorWidthAndHeight(24), fontWeight: 800, height: calculatorWidthAndHeight(70) }}>{item.name_ads}</span>
                                                 <div className="d-flex align-items-center justify-content-center p-2 px-4 rounded-circle" style={{ background: index % 2 === 0 ? '#EAE0D5' : '#A4C3B2' }}>
-                                                    <span style={{ fontSize: item.get_next_week ? '28px' : item.high_light.length > 3 ? '20px' : '36px', fontWeight: 800 }}>{item.get_next_week ? nowDate : item.high_light}</span>
+                                                    <span style={{ fontSize: item.get_next_week ? calculatorWidthAndHeight(28) : item.high_light.length > 3 ? calculatorWidthAndHeight(20) : calculatorWidthAndHeight(36), fontWeight: 800 }}>{item.get_next_week ? nowDate : item.high_light}</span>
                                                 </div>
                                             </div>
                                             <div className="w-50 h-100 d-flex align-items-center justify-content-center">
-                                                <img src={`http://localhost:3333${item.image_ads}`} alt="" className='img-fluid rounded' style={{ maxWidth: '150px' }} />
+                                                <img src={`http://localhost:3333${item.image_ads}`} alt="" className='img-fluid rounded' style={{ maxWidth: calculatorWidthAndHeight(150) }} />
                                             </div>
                                         </div>
                                     )
@@ -322,30 +323,30 @@ function Home() {
                 <div className="container-fluid h-100 w-100" >
                     <div className="h-100 row g-0" style={{ height: '92vh' }}>
                         <div className="col-2 d-flex flex-column align-items-center justify-content-between h-100 p-2 gap-2">
-                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/SetRent')} style={{ height: '154px' }}>
-                                <img src={icon_tabler} alt="" style={{ maxWidth: '90px', maxHeight: '90px', objectFit: 'cover' }} />
-                                <span className='p-1 text-center' style={{ fontSize: '24px', fontWeight: 800, color: '#A98467' }}>Manage Area</span>
+                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/SetRent')} style={{ height: calculatorWidthAndHeight(154) }}>
+                                <img src={icon_tabler} alt="" style={{ maxWidth: calculatorWidthAndHeight(90), maxHeight: calculatorWidthAndHeight(90), objectFit: 'cover' }} />
+                                <span className='p-1 text-center' style={{ fontSize: calculatorWidthAndHeight(24), fontWeight: 800, color: '#A98467' }}>Manage Area</span>
                             </div>
-                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/ManageRequest')} style={{ height: '154px' }}>
-                                <img src={icon_check_payment} alt="" className='' style={{ maxWidth: '90px', maxHeight: '110px', objectFit: 'cover' }} />
-                                <span className='text-center' style={{ fontSize: '24px', fontWeight: 800, color: '#A98467' }}>Payment Confirmation</span>
+                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/ManageRequest')} style={{ height: calculatorWidthAndHeight(154) }}>
+                                <img src={icon_check_payment} alt="" className='' style={{ maxWidth: calculatorWidthAndHeight(90), maxHeight: calculatorWidthAndHeight(110), objectFit: 'cover' }} />
+                                <span className='text-center' style={{ fontSize: calculatorWidthAndHeight(24), fontWeight: 800, color: '#A98467' }}>Payment Confirmation</span>
                             </div>
-                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/RequestHistory')} style={{ height: '154px' }}>
-                                <img src={icon_history} alt="" style={{ maxWidth: '95px', maxHeight: '90px', objectFit: 'cover' }} />
-                                <span className='text-center' style={{ fontSize: '24px', fontWeight: 800, color: '#A98467' }}>Confirmation History</span>
+                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/RequestHistory')} style={{ height: calculatorWidthAndHeight(154) }}>
+                                <img src={icon_history} alt="" style={{ maxWidth: calculatorWidthAndHeight(95), maxHeight: calculatorWidthAndHeight(90), objectFit: 'cover' }} />
+                                <span className='text-center' style={{ fontSize: calculatorWidthAndHeight(24), fontWeight: 800, color: '#A98467' }}>Confirmation History</span>
                             </div>
-                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/ManageEvent')} style={{ height: '154px' }}>
-                                <img src={icon_manage_ads} alt="" style={{ maxWidth: '90px', maxHeight: '90px', objectFit: 'cover' }} />
-                                <span className='p-2 text-center' style={{ fontSize: '24px', fontWeight: 800, color: '#A98467' }}>Manage Ads</span>
+                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/ManageEvent')} style={{ height: calculatorWidthAndHeight(154) }}>
+                                <img src={icon_manage_ads} alt="" style={{ maxWidth: calculatorWidthAndHeight(90), maxHeight: calculatorWidthAndHeight(90), objectFit: 'cover' }} />
+                                <span className='p-2 text-center' style={{ fontSize: calculatorWidthAndHeight(24), fontWeight: 800, color: '#A98467' }}>Manage Ads</span>
                             </div>
-                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/ManageUser')} style={{ height: '154px' }}>
-                                <img src={icon_edit_user} alt="" style={{ maxWidth: '90px', maxHeight: '90px', objectFit: 'cover' }} />
-                                <span className='p-2 text-center' style={{ fontSize: '24px', fontWeight: 800, color: '#A98467' }}>Manage Users</span>
+                            <div className="d-flex align-items-center justify-content-start bg-light shadow-lg rounded gap-2 hov w-100 p-2" onClick={(e) => navigate('/ManageUser')} style={{ height: calculatorWidthAndHeight(154) }}>
+                                <img src={icon_edit_user} alt="" style={{ maxWidth: calculatorWidthAndHeight(90), maxHeight: calculatorWidthAndHeight(90), objectFit: 'cover' }} />
+                                <span className='p-2 text-center' style={{ fontSize: calculatorWidthAndHeight(24), fontWeight: 800, color: '#A98467' }}>Manage Users</span>
                             </div>
                         </div>
                         <div className="col-10 d-flex flex-column align-items-center justify-content-start h-100 p-2 gap-2">
                             <div className="d-flex flex-column align-items-start justify-content-center h-50 w-100 rounded shadow-lg p-2">
-                                <span style={{ color: "#000", fontSize: '18px' }}>Upcoming Market Lock Request Status ({nowDate})</span>
+                                <span style={{ color: "#000", fontSize: calculatorWidthAndHeight(18) }}>Upcoming Market Lock Request Status ({nowDate})</span>
                                 <div className="d-flex align-items-center justify-content-between  w-100">
                                     <div className='w-50 h-100 d-flex flex-column align-items-start justify-content-evenly' >
                                         {labels.map((label, index) => {
@@ -357,7 +358,7 @@ function Home() {
                                                     <span
                                                         style={{
                                                             color: chartData.datasets[0].backgroundColor[index],
-                                                            borderRadius: "20px",
+                                                            borderRadius: calculatorWidthAndHeight(20),
                                                         }}
                                                     >
                                                         {label}: {count} ({percentage}%) {/* Display raw value and percentage */}
@@ -370,7 +371,7 @@ function Home() {
                                     <div style={{ margin: "0 auto" }}>
                                         <Doughnut key={JSON.stringify(chartData)} data={chartData} options={options} />
                                     </div>
-                                    {/* <button className='btn btn-light shadow-lg' onClick={(e) => { navigate('/ManageRequest') }} style={{ fontSize: '18px', fontWeight: 400 }}>Manage Request</button> */}
+                                    {/* <button className='btn btn-light shadow-lg' onClick={(e) => { navigate('/ManageRequest') }} style={{ fontSize: calculatorWidthAndHeight(18), fontWeight: 400 }}>Manage Request</button> */}
 
                                 </div>
                             </div>
@@ -379,13 +380,13 @@ function Home() {
                                     <div className="w-50 h-100 d-flex flex-column align-items-start justify-content-evenly">
                                         <button className='btn btn-light shadow-lg' onClick={(e) => {
                                             setTypeChart('daily');
-                                        }} style={{ fontSize: '18px', fontWeight: 400 }}>Daily</button>
+                                        }} style={{ fontSize: calculatorWidthAndHeight(18), fontWeight: 400 }}>Daily</button>
                                         <button className='btn btn-light shadow-lg' onClick={(e) => {
                                             setTypeChart('monthly');
-                                        }} style={{ fontSize: '18px', fontWeight: 400 }}>Monthly</button>
+                                        }} style={{ fontSize: calculatorWidthAndHeight(18), fontWeight: 400 }}>Monthly</button>
                                         <button className='btn btn-light shadow-lg' onClick={(e) => {
                                             setTypeChart('yearly');
-                                        }} style={{ fontSize: '18px', fontWeight: 400 }}>Yearly</button>
+                                        }} style={{ fontSize: calculatorWidthAndHeight(18), fontWeight: 400 }}>Yearly</button>
                                     </div>
                                     <div className="w-50 h-100 d-flex align-items-center justify-content-center">
                                         <BarChart chartData={chartDataMoney} optionsBar={optionsBar} />
@@ -399,22 +400,22 @@ function Home() {
                 <>
                     <div className="container-fluid" style={{ background: `url(${bg_home})`, backgroundSize: 'cover', height: '92vh' }}>
                         <div className="d-flex flex-column align-items-center justify-content-center w-100 h-100">
-                            <div className=" row g-0 w-100" style={{ height: '69vh' }}>
-                                <div className="col-4 d-flex align-items-center justify-content-center h-100">
+                            <div className=" row g-0 w-100" style={{ }}>
+                                <div className="col-sm-4 col-12  d-flex align-items-center justify-content-center h-100">
                                     <img src={image_map} alt="" className="w-100 h-100 image-fluid" style={{ objectFit: 'contain' }} />
                                 </div>
                                 <div className="col d-flex flex-column align-items-center justify-content-center h-100">
                                     <div className="d-flex flex-column align-items-start justify-content-evenly h-75 w-100">
-                                        <div className="d-flex flex-column align-items-start justify-content-start rounded px-5" style={{ gap: '8px' }}>
-                                            <span style={{ fontSize: '60px', fontWeight: 800, color: '#6D4C3D', textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}>Upcoming market <br /> days : {nowDate}</span>
-                                            <span style={{ fontSize: '60px', fontWeight: 800, color: '#6D4C3D', textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)' }}>COUNTDOWN</span>
+                                        <div className="d-flex flex-column align-items-start justify-content-start rounded px-5" style={{ gap: calculatorWidthAndHeight(8) }}>
+                                            <span style={{ fontSize: calculatorWidthAndHeight(60), fontWeight: 800, color: '#6D4C3D', textShadow: `0 ${calculatorWidthAndHeight(4)} ${calculatorWidthAndHeight(4)} rgba(0, 0, 0, 0.25)` }}>Upcoming market <br /> days : {nowDate}</span>
+                                            <span style={{ fontSize: calculatorWidthAndHeight(60), fontWeight: 800, color: '#6D4C3D', textShadow: `0 ${calculatorWidthAndHeight(4)} ${calculatorWidthAndHeight(4)} rgba(0, 0, 0, 0.25)` }}>COUNTDOWN</span>
                                             <div className="p-1 px-3" style={{ background: '#A4C3B2', borderRadius: '0.2vh' }}>
-                                                <span style={{ fontSize: '34px', fontWeight: 800 }}>{countdown}</span>
+                                                <span style={{ fontSize: calculatorWidthAndHeight(34), fontWeight: 800 }}>{countdown}</span>
                                             </div>
                                             <button className='btn  px-4' onClick={(e) => {
                                                 let date_is_coming = nowDate.replace(/\//g, "-");
                                                 navigate(`/RequestZone`, { state: { date_is_coming } })
-                                            }} style={{ fontSize: '34px', fontWeight: 800, color: '#fff', background: '#6D4C3D', border: '2px solid #000', borderRadius: '5px' }}>BOOKING</button>
+                                            }} style={{ fontSize: calculatorWidthAndHeight(34), fontWeight: 800, color: '#fff', background: '#6D4C3D', border: `${calculatorWidthAndHeight(2)} solid #000`, borderRadius: calculatorWidthAndHeight(5) }}>BOOKING</button>
                                         </div>
 
                                     </div>
@@ -431,7 +432,7 @@ function Home() {
                                         <option value="all" disabled>Product type filter</option>
                                         <option value="all">ALL</option>
                                         {
-                                            data_shop_type.map((item, index) => {
+                                            config.data_shop_type.map((item, index) => {
                                                 return (
                                                     <option key={index} value={item.id - 1}>{item.name}</option>
                                                 )
@@ -462,7 +463,7 @@ function Home() {
                                                     <td style={{ padding: '2vh' }}>{item.area}</td>
                                                     <td style={{ padding: '2vh' }}>{item.shop_name}</td>
                                                     <td style={{ padding: '2vh' }}>{item.shop_detail}</td>
-                                                    <td style={{ padding: '2vh' }}>{data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</td>
+                                                    <td style={{ padding: '2vh' }}>{config.data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</td>
                                                 </tr>
                                             )
                                         })

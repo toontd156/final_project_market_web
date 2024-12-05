@@ -4,50 +4,51 @@ import Modal from "../../components/Modal";
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom'
 import { jwtDecode } from "jwt-decode";
-import data_shop_type from '../../conf/config';
+import config from '../../conf/config';
 import checkToken from '../../func/CheckToken';
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
 
 function RequestStatus() {
 
     const [data_request, setDataRequest] = useState([
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Pending'
-        },
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Approved'
-        },
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Disapproved'
-        },
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Pending'
-        },
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Pending'
-        },
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Pending'
-        },
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Pending'
-        },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Pending'
+        // },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Approved'
+        // },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Disapproved'
+        // },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Pending'
+        // },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Pending'
+        // },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Pending'
+        // },
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Pending'
+        // },
     ]);
 
-    // const [data_shop_type, setDataShopType] = useState([
+    // const [config.data_shop_type, setDataShopType] = useState([
     //     {
     //         name: 'Food'
     //     },
@@ -64,7 +65,7 @@ function RequestStatus() {
         }
         const decodeToken = jwtDecode(token);
         try {
-            const response = await axios.post('http://localhost:3333/api/request_status', { id: decodeToken.id, email: decodeToken.email })
+            const response = await axios.post(config.api_url + '/api/request_status', { id: decodeToken.id, email: decodeToken.email })
             const result = response.data
             if (result.status) {
                 setDataRequest(result.data)
@@ -98,6 +99,14 @@ function RequestStatus() {
     };
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'user') {
+            navigate(-1)
+            return
+        }
         checkRequest();
     }, [])
 
@@ -156,7 +165,7 @@ function RequestStatus() {
                                                                 <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Booking date</p>
                                                                 <p className="card-text m-0 p-0">{item.date}</p>
                                                                 <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Product type</p>
-                                                                <p className="card-text m-0 p-0">{data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</p>
+                                                                <p className="card-text m-0 p-0">{config.data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</p>
                                                                 <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Name</p>
                                                                 <p className="card-text m-0 p-0">{item.shop_name}</p>
                                                                 <div className="d-flex align-items-center justify-content-center gap-2">
@@ -201,7 +210,7 @@ function RequestStatus() {
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Booking date</p>
                                             <p className="card-text m-0 p-0">{dataModal.date}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Product type</p>
-                                            <p className="card-text m-0 p-0">{data_shop_type[dataModal.shop_type ? dataModal.shop_type - 1 : 0].name}</p>
+                                            <p className="card-text m-0 p-0">{config.data_shop_type[dataModal.shop_type ? dataModal.shop_type - 1 : 0].name}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Name</p>
                                             <p className="card-text m-0 p-0">{dataModal.shop_name}</p>
 

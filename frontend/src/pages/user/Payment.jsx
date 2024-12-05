@@ -7,7 +7,10 @@ import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Swal from "sweetalert2";
 import { jwtDecode } from 'jwt-decode';
+import config from '../../conf/config';
 import checkToken from '../../func/CheckToken';
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
+
 function Payment() {
     const navigate = useNavigate()
     const location = useLocation();
@@ -16,6 +19,18 @@ function Payment() {
     // const [shopName, setShopName] = useState(props.shopName)
     // const [description, setDescription] = useState(props.description)
     // const [price, setPrice] = useState(props.price)
+
+    useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'user') {
+            navigate(-1)
+            return
+        }
+    }, [])
+
     const [file, setFile] = useState();
     const inputRef = useRef(null);
     const handleChangeFile = (e) => {
@@ -62,7 +77,7 @@ function Payment() {
         data.append('date_is_coming', date_is_coming);
         data.append('nowDate', nowDate);
         data.append('productType', productType);
-        axios.post('http://localhost:3333/api/payment_zone', data)
+        axios.post(config.api_url + '/api/payment_zone', data)
             .then((response) => {
                 const result = response.data
                 if (result.status) {
@@ -97,12 +112,12 @@ function Payment() {
             <div className="container-fluid" style={{ height: '92vh' }}>
                 <div className="h-100 row g-0  w-100 p-2 gap-4">
                     <div className="col d-flex flex-column align-items-center justify-content-center h-100 w-100 p-2 rounded" style={{ background: '#ABC4AB' }}>
-                        <div className="d-flex flex-column align-items-center justify-content-center h-100 w-75" style={{ gap: '12px' }}>
-                            <div className="p-2 d-flex flex-column align-items-center justify-content-start  rounded w-100 h-50" style={{ gap: '12px' }}>
-                                <img src={qr_code} alt="" className="w-100 h-100 img-fluid" style={{ objectFit: 'cover', borderRadius: '8px' }} />
+                        <div className="d-flex flex-column align-items-center justify-content-center h-100 w-75" style={{ gap: calculatorWidthAndHeight(12) }}>
+                            <div className="p-2 d-flex flex-column align-items-center justify-content-start  rounded w-100 h-50" style={{ gap: calculatorWidthAndHeight(12) }}>
+                                <img src={qr_code} alt="" className="w-100 h-100 img-fluid" style={{ objectFit: 'cover', borderRadius: calculatorWidthAndHeight(8) }} />
                             </div>
                             <div className="h-50 p-2 d-flex flex-column align-items-center justify-content-center w-100 gap-1">
-                                <div className="p-2 h-75 d-flex align-items-center justify-content-center w-100" style={{ border: '1px solid #ccc', borderRadius: '8px', background: '#A98467' }}>
+                                <div className="p-2 h-75 d-flex align-items-center justify-content-center w-100" style={{ border: '1px solid #ccc', borderRadius: calculatorWidthAndHeight(8), background: '#A98467' }}>
                                     <input
                                         type="file"
                                         ref={inputRef}
@@ -118,7 +133,7 @@ function Payment() {
                                     />
 
                                 </div>
-                                <div className="d-flex flex-column align-items-center justify-content-center px-5 rounded" style={{ gap: '4px', height: '42px', background: '#EAE0D5', border: '1px solid black' }}>
+                                <div className="d-flex flex-column align-items-center justify-content-center px-5 rounded" style={{ gap: calculatorWidthAndHeight(4), height: calculatorWidthAndHeight(42), background: '#EAE0D5', border: `${calculatorWidthAndHeight(1)} solid black` }}>
                                     <span>Total amount {price} baht</span>
                                 </div>
                             </div>
@@ -128,47 +143,47 @@ function Payment() {
                         </div>
                     </div>
                     <div className="col d-flex flex-column align-items-center justify-content-center h-100 w-100 p-2 rounded" style={{ background: '#727D71' }}>
-                        <div className="p-2 d-flex flex-column align-items-center justify-content-start w-75 h-100 rounded" style={{  gap: '12px' }}>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                        <div className="p-2 d-flex flex-column align-items-center justify-content-between bg-info w-75 h-100 rounded" style={{ gap: calculatorWidthAndHeight(12) }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Upcoming market days</label>
-                                <input type="text" disabled value={date_is_coming} className='form-control' style={{ height: '48px', background: '#FFE8D6' }} />
+                                <input type="text" disabled value={date_is_coming} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Booking date</label>
-                                <input type="text" disabled value={nowDate} className='form-control' style={{ height: '48px', background: '#FFE8D6' }} />
+                                <input type="text" disabled value={nowDate} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Product type</label>
                                 <select className='form-select' value={productType} onChange={(e) => {
 
-                                }} style={{ height: '48px', background: '#FFE8D6' }}>
+                                }} style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }}>
                                     <option value="0" selected disabled>Food</option>
                                     <option value="1" selected disabled>Clothes</option>
                                 </select>
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Select zone</label>
                                 <select className='form-select' value={areaSelect} onChange={(e) => {
-                                }} style={{ height: '48px', background: '#FFE8D6' }}>
+                                }} style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }}>
                                     <option value="0" selected disabled>{areaSelect}</option>
                                 </select>
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Area</label>
-                                <input type="text" disabled value={area} className='form-control' style={{ height: '48px', background: '#FFE8D6' }} />
+                                <input type="text" disabled value={area} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Shop Name</label>
-                                <input type="text" placeholder='Input your Shop Name' value={shopName} className='form-control' style={{ height: '48px', background: '#FFE8D6' }} />
+                                <input type="text" placeholder='Input your Shop Name' value={shopName} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Description</label>
                                 <textarea className="w-100 rounded" style={{ height: '14vh', background: '#FFE8D6' }} value={description} name="" id=""></textarea>
                             </div>
                             <div className="d-flex align-items-center justify-content-evenly gap-2 w-100">
 
-                            <button className='btn px-4' style={{ background: '#FFE8D6', border: '1px solid #000', color: '#6D4C3D', fontSize: '14px', fontWeight: 500 }} onClick={(e) => { sendRequest() }}>BACK</button>
-                            <button className='btn px-4' style={{ background: '#6D4C3D', border: '1px solid #000', color: '#FFE8D6', fontSize: '14px', fontWeight: 500 }} onClick={(e) => { sendRequest() }}>CONFIRM</button>
+                                <button className='btn px-4' style={{ background: '#FFE8D6', border: `${calculatorWidthAndHeight(1)} solid #000`, color: '#6D4C3D', fontSize: calculatorWidthAndHeight(14), fontWeight: 500 }} onClick={(e) => { sendRequest() }}>BACK</button>
+                                <button className='btn px-4' style={{ background: '#6D4C3D', border: `${calculatorWidthAndHeight(1)} solid #000`, color: '#FFE8D6', fontSize: calculatorWidthAndHeight(14), fontWeight: 500 }} onClick={(e) => { sendRequest() }}>CONFIRM</button>
                             </div>
 
                         </div>

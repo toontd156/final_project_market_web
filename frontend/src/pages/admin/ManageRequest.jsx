@@ -7,9 +7,10 @@ import slip_test from "../../assets/slip_test.png";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom'
-import data_shop_type from '../../conf/config';
+import config from '../../conf/config';
 import checkToken from '../../func/CheckToken';
 import Swal from 'sweetalert2'
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
 function ManageRequest() {
     const navigate = useNavigate()
 
@@ -29,24 +30,24 @@ function ManageRequest() {
         }
     )
     const [data_request, setDataRequest] = useState([
-        {
-            area: 'A8',
-            date: '2021-08-01',
-            status: 'Pending',
-            shopName: 'Shop A',
-            slip: slip_test,
-            detailShop: 'Shop A 1234567890 Shop A 1234567890 Shop A 1234567890 Shop A 1234567890',
-            price: 1000
-        },
-        {
-            area: 'A9',
-            date: '2021-08-02',
-            status: 'Pending',
-            shopName: 'Shop B',
-            slip: slip_test,
-            detailShop: 'Shop B 1234567890',
-            price: 1000
-        }
+        // {
+        //     area: 'A8',
+        //     date: '2021-08-01',
+        //     status: 'Pending',
+        //     shopName: 'Shop A',
+        //     slip: slip_test,
+        //     detailShop: 'Shop A 1234567890 Shop A 1234567890 Shop A 1234567890 Shop A 1234567890',
+        //     price: 1000
+        // },
+        // {
+        //     area: 'A9',
+        //     date: '2021-08-02',
+        //     status: 'Pending',
+        //     shopName: 'Shop B',
+        //     slip: slip_test,
+        //     detailShop: 'Shop B 1234567890',
+        //     price: 1000
+        // }
     ]);
 
 
@@ -69,7 +70,7 @@ function ManageRequest() {
             navigate('/Login')
         }
         try {
-            const response = await axios.get('http://localhost:3333/api/request_status_admin')
+            const response = await axios.get(config.api_url + '/api/request_status_admin')
             const result = response.data
             if (result.status) {
                 setDataRequest(result.data)
@@ -81,6 +82,14 @@ function ManageRequest() {
 
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'admin') {
+            navigate(-1)
+            return
+        }
         checkRequest()
     }, [])
 
@@ -91,7 +100,7 @@ function ManageRequest() {
 
     const cancelRequest = async (payment_id) => {
         try {
-            const response = await axios.post('http://localhost:3333/api/cancel_request', { payment_id })
+            const response = await axios.post(config.api_url + '/api/cancel_request', { payment_id })
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -109,7 +118,7 @@ function ManageRequest() {
 
     const approveRequest = async (payment_id) => {
         try {
-            const response = await axios.post('http://localhost:3333/api/approve_request', { payment_id })
+            const response = await axios.post(config.api_url + '/api/approve_request', { payment_id })
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -135,7 +144,7 @@ function ManageRequest() {
         }
     }
 
-    // const [data_shop_type, setDataShopType] = useState([
+    // const [config.data_shop_type, setDataShopType] = useState([
     //     {
     //         name: 'Food'
     //     },
@@ -195,7 +204,7 @@ function ManageRequest() {
                                                                 <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Booking date</p>
                                                                 <p className="card-text m-0 p-0">{item.date}</p>
                                                                 <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Product type</p>
-                                                                <p className="card-text m-0 p-0">{data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</p>
+                                                                <p className="card-text m-0 p-0">{config.data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</p>
                                                                 <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Name</p>
                                                                 <p className="card-text m-0 p-0">{item.shop_name}</p>
                                                             </div>
@@ -235,7 +244,7 @@ function ManageRequest() {
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Booking date</p>
                                             <p className="card-text m-0 p-0">{dataModal.date}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Product type</p>
-                                            <p className="card-text m-0 p-0">{data_shop_type[dataModal.shop_type ? dataModal.shop_type - 1 : 0].name}</p>
+                                            <p className="card-text m-0 p-0">{config.data_shop_type[dataModal.shop_type ? dataModal.shop_type - 1 : 0].name}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Name</p>
                                             <p className="card-text m-0 p-0">{dataModal.shop_name}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Detail</p>
@@ -252,12 +261,12 @@ function ManageRequest() {
                             <button className="btn btn-light w-50 d-flex align-items-center justify-content-center p-2 btn-outline-danger" onClick={(e) => {
                                 cancelRequest(dataModal.payment_id)
                             }}>
-                                <img src={icon_cancel} alt="" style={{ width: '14px', height: '14px', objectFit: 'cover' }} />
+                                <img src={icon_cancel} alt="" style={{ width: calculatorWidthAndHeight(14), height: calculatorWidthAndHeight(14), objectFit: 'cover' }} />
                             </button>
                             <button className="btn btn-light w-50 d-flex align-items-center justify-content-center p-2 btn-outline-success" onClick={(e) => {
                                 approveRequest(dataModal.payment_id)
                             }}>
-                                <img src={icon_check} alt="" style={{ width: '14px', height: '14px', objectFit: 'cover' }} />
+                                <img src={icon_check} alt="" style={{ width: calculatorWidthAndHeight(14), height: calculatorWidthAndHeight(14), objectFit: 'cover' }} />
                             </button>
                         </div>
                         }

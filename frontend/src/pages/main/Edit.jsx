@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import Template from "../../components/Template";
 import Swal from 'sweetalert2';
 import checkToken from '../../func/CheckToken';
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
 function Edit() {
     const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -140,34 +141,34 @@ function Edit() {
                     <div className="row g-0 h-100">
                         <div className="col-md-12 p-1">
                             <div className="d-flex flex-column align-items-start justify-content-start gap-2">
-                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                     <label>Full Name</label>
                                     <input
                                         type="text"
                                         value={my_data.fullname}
                                         className='form-control'
                                         onChange={(e) => handleInputChange('fullname', e.target.value)}
-                                        style={{ height: '48px' }}
+                                        style={{ height: calculatorWidthAndHeight(48) }}
                                     />
                                 </div>
-                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                     <label>Phone Number</label>
                                     <input
                                         type="number"
                                         value={my_data.phone}
                                         className='form-control'
                                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                                        style={{ height: '48px' }}
+                                        style={{ height: calculatorWidthAndHeight(48) }}
                                     />
                                 </div>
-                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                     <label>Email Address</label>
                                     <input
                                         type="email"
                                         value={my_data.email}
                                         className='form-control'
                                         onChange={(e) => handleInputChange('email', e.target.value)}
-                                        style={{ height: '48px' }}
+                                        style={{ height: calculatorWidthAndHeight(48) }}
                                     />
                                 </div>
                             </div>
@@ -196,24 +197,24 @@ function Edit() {
                     <div className="row g-0 h-100" style={{}}>
                         <div className="col-md-12 p-1">
                             <div className="d-flex flex-column align-items-start justify-content-start gap-2">
-                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                     <label>Old Password</label>
                                     <input type="password" value={password_data.old_password} className='form-control' onChange={(e) => {
                                         handleInputChangePassword('old_password', e.target.value)
 
-                                    }} style={{ height: '48px' }} />
+                                    }} style={{ height: calculatorWidthAndHeight(48) }} />
                                 </div>
-                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                     <label>New Password</label>
                                     <input type="password" value={password_data.new_password} className='form-control' onChange={(e) => {
                                         handleInputChangePassword('new_password', e.target.value)
-                                    }} style={{ height: '48px' }} />
+                                    }} style={{ height: calculatorWidthAndHeight(48) }} />
                                 </div>
-                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                     <label>Confirm Password</label>
                                     <input type="password" value={password_data.confirm_password} className='form-control' onChange={(e) => {
                                         handleInputChangePassword('confirm_password', e.target.value)
-                                    }} style={{ height: '48px' }} />
+                                    }} style={{ height: calculatorWidthAndHeight(48) }} />
                                 </div>
                             </div>
                         </div>
@@ -241,18 +242,18 @@ function Edit() {
                     </div>
                     <div className="col d-flex flex-column align-items-center justify-content-center h-100 rounded-end" style={{ padding: '3vh', gap: '2vh', background: '#ABC4AB' }}>
                         <h1 style={{ color: '#000' }}>My Account</h1>
-                        <div className="d-flex flex-column align-items-center justify-content-start" style={{ gap: '14px', width: '467px' }}>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                        <div className="d-flex flex-column align-items-center justify-content-start" style={{ gap: calculatorWidthAndHeight(14), width: calculatorWidthAndHeight(467) }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                 <label>Full Name</label>
-                                <input type="text" disabled value={my_data.fullname} className='form-control' style={{ height: '48px' }} />
+                                <input type="text" disabled value={my_data.fullname} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                 <label>Phone Number</label>
-                                <input type="number" disabled value={my_data.phone} className='form-control' style={{ height: '48px' }} />
+                                <input type="number" disabled value={my_data.phone} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
-                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                 <label>Email Address</label>
-                                <input type="email" disabled value={my_data.email} className='form-control' style={{ height: '48px' }} />
+                                <input type="email" disabled value={my_data.email} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
                             <div className="d-flex align-items-center justify-content-between w-100" style={{ gap: '2vh' }}>
                                 <button className='btn w-50' onClick={(e) => {
@@ -262,24 +263,24 @@ function Edit() {
                                                 <div className="row g-0 h-100" style={{}}>
                                                     <div className="col-md-12 p-1">
                                                         <div className="d-flex flex-column align-items-start justify-content-start gap-2">
-                                                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                                                 <label>Full Name</label>
                                                                 <input type="text" value={my_data.fullname} className='form-control' onChange={(e) => {
                                                                     handleInputChange('fullname', e.target.value)
 
-                                                                }} style={{ height: '48px' }} />
+                                                                }} style={{ height: calculatorWidthAndHeight(48) }} />
                                                             </div>
-                                                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                                                 <label>Phone Number</label>
                                                                 <input type="number" value={my_data.phone} className='form-control' onChange={(e) => {
                                                                     handleInputChange('phone', e.target.value)
-                                                                }} style={{ height: '48px' }} />
+                                                                }} style={{ height: calculatorWidthAndHeight(48) }} />
                                                             </div>
-                                                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                                            <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                                                 <label>Email Address</label>
                                                                 <input type="email" value={my_data.email} className='form-control' onChange={(e) => {
                                                                     handleInputChange('email', e.target.value)
-                                                                }} style={{ height: '48px' }} />
+                                                                }} style={{ height: calculatorWidthAndHeight(48) }} />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -295,8 +296,8 @@ function Edit() {
                                         ]
                                     })
                                     handleOpenModal()
-                                }} style={{ height: '48px', padding: '2px 40px', borderRadius: '8px', background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}>Edit My Account</button>
-                                <button className='btn w-50' style={{ height: '48px', padding: '2px 40px', borderRadius: '8px', background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}
+                                }} style={{ height: calculatorWidthAndHeight(48), padding: `${calculatorWidthAndHeight(2)} ${calculatorWidthAndHeight(40)}`, borderRadius: calculatorWidthAndHeight(8), background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}>Edit My Account</button>
+                                <button className='btn w-50' style={{ height: calculatorWidthAndHeight(48), padding: `${calculatorWidthAndHeight(2)} ${calculatorWidthAndHeight(40)}`, borderRadius: calculatorWidthAndHeight(8), background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}
                                     onClick={(e) => {
                                         setPassWordData({
                                             old_password: '',
@@ -309,24 +310,24 @@ function Edit() {
                                                     <div className="row g-0 h-100" style={{}}>
                                                         <div className="col-md-12 p-1">
                                                             <div className="d-flex flex-column align-items-start justify-content-start gap-2">
-                                                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                                                     <label>Old Password</label>
                                                                     <input type="password" value={password_data.old_password} className='form-control' onChange={(e) => {
                                                                         handleInputChangePassword('old_password', e.target.value)
 
-                                                                    }} style={{ height: '48px' }} />
+                                                                    }} style={{ height: calculatorWidthAndHeight(48) }} />
                                                                 </div>
-                                                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                                                     <label>New Password</label>
                                                                     <input type="password" value={password_data.new_password} className='form-control' onChange={(e) => {
                                                                         handleInputChangePassword('new_password', e.target.value)
-                                                                    }} style={{ height: '48px' }} />
+                                                                    }} style={{ height: calculatorWidthAndHeight(48) }} />
                                                                 </div>
-                                                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                                                <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4)}}>
                                                                     <label>Confirm Password</label>
                                                                     <input type="password" value={password_data.confirm_password} className='form-control' onChange={(e) => {
                                                                         handleInputChangePassword('confirm_password', e.target.value)
-                                                                    }} style={{ height: '48px' }} />
+                                                                    }} style={{ height: calculatorWidthAndHeight(48) }} />
                                                                 </div>
                                                             </div>
                                                         </div>

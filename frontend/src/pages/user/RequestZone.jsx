@@ -15,9 +15,13 @@ import i_zone from "../../assets/i_zone.png";
 import default_zone from "../../assets/default_zone.png";
 import { jwtDecode } from "jwt-decode";
 import checkToken from '../../func/CheckToken';
+import Swal from 'sweetalert2'
+import config from '../../conf/config';
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
+
 function RequestZone() {
     const location = useLocation();
-    const { date_is_coming } = location.state || {}; 
+    const { date_is_coming } = location.state || {};
     const [area, setArea] = useState('')
     const [areaIndex, setAreaIndex] = useState('')
     const [areaSelect, setAreaSelect] = useState('')
@@ -41,18 +45,22 @@ function RequestZone() {
     });
     const getArea = async () => {
         try {
-            const response = await axios.get('http://localhost:3333/api/get_area')
+            const response = await axios.get(config.api_url + '/api/get_area')
             const result = response.data
             if (result.status) {
                 for (let i = 0; i < result.data.length; i++) {
                     let sm_data = result.data[i]
-                    if ((sm_data.date_market !== date_is_coming || sm_data.date_market === null) && sm_data.toggle === 0) {
-                        console.log(sm_data.zone_name)
-                        sm_data.rent = 0
+                    sm_data.rent = 0
+                    if (sm_data.date_market === date_is_coming) {
+                        if (sm_data.status == 'Approved') {
+                            sm_data.rent = 2
+                        } else if (sm_data.status == 'Pending') {
+                            sm_data.rent = 1
+                        }
                     }
                 }
                 setAreaList(result.data)
-             
+
             }
         } catch (error) {
             console.log(error);
@@ -66,7 +74,7 @@ function RequestZone() {
         }
         const decodeToken = jwtDecode(token);
         try {
-            const response = await axios.post('http://localhost:3333/api/shop_detail', { id: decodeToken.id, email: decodeToken.email })
+            const response = await axios.post(config.api_url + '/api/shop_detail', { id: decodeToken.id, email: decodeToken.email })
             const result = response.data
             if (result.status) {
                 setShopName(result.data.shop_name || '')
@@ -78,10 +86,18 @@ function RequestZone() {
     }
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'user') {
+            navigate(-1)
+            return
+        }
         getArea();
         shopDetail();
         setNowDate(new Date().toISOString().split('T')[0].split('-').reverse().join('-'))
-    }, [])
+    }, []);
 
     const justRequest = () => {
         const token = checkToken();
@@ -128,13 +144,28 @@ function RequestZone() {
                                         }).map((item, index) => {
                                             return (
                                                 <div className="d-flex align-items-center justify-content-center py-1 hov" key={index} onClick={(e) => {
+                                                    if (item.toggle == 1) {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: 'This area is not available',
+                                                        })
+                                                        return
+                                                    } else if (item.rent != 0) {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Oops...',
+                                                            text: 'This area is already booked',
+                                                        })
+                                                        return
+                                                    }
                                                     setAreaSelect(item.zone_name.charAt(0).toLowerCase())
                                                     setArea(item.zone_name)
                                                     setPrice(item.price)
                                                     setAreaIndex(item.category_id)
                                                     setZoneId(item.id)
-                                                }} style={{ width: '94px', background: item.rent == 0 ? '#87C38F' : '#C55D5D', borderRadius: '5px', border: area == item.zone_name ? '2px solid #fff' : '2px solid #000' }}>
-                                                    <p className='m-0 p-0'>{item.zone_name}</p>
+                                                }} style={{ width: calculatorWidthAndHeight(94), background: item.toggle == 0 ? item.rent == 0 ? '#87C38F' : item.rent == 1 ? 'yellow' : '#C55D5D' : '#383838', borderRadius: calculatorWidthAndHeight(5), border: area == item.zone_name ? `${calculatorWidthAndHeight(2)} solid #fff` : `${calculatorWidthAndHeight(2)} solid #000` }}>
+                                                    <p className='m-0 p-0' style={{color : item.toggle == 0 ? '#383838' : '#fff'}}>{item.zone_name}</p>
                                                 </div>
                                             )
                                         })
@@ -142,30 +173,30 @@ function RequestZone() {
                                 </div>
                             </div>
                             <div className="col d-flex flex-column align-items-center justify-content-center h-100 w-100 p-2 rounded" style={{ background: '#727D71' }}>
-                                <div className="d-flex flex-column align-items-center justify-content-start h-100 w-75" style={{ gap: '12px' }}>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                <div className="d-flex flex-column align-items-center justify-content-start h-100 w-75" style={{ gap: calculatorWidthAndHeight(12) }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Upcoming market days</label>
-                                        <input type="text" disabled value={date_is_coming} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: '48px' }} />
+                                        <input type="text" disabled value={date_is_coming} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                                     </div>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Booking date</label>
-                                        <input type="text" disabled value={nowDate} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: '48px' }} />
+                                        <input type="text" disabled value={nowDate} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                                     </div>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Product type</label>
                                         <select className='form-select' onChange={(e) => {
                                             setProductType(e.target.value)
 
-                                        }} style={{ height: '48px'}}>
+                                        }} style={{ height: calculatorWidthAndHeight(48) }}>
                                             <option value="0" selected >Food</option>
                                             <option value="1"  >Clothes</option>
                                         </select>
                                     </div>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Select zone</label>
                                         <select className='form-select' value={areaSelect} onChange={(e) => {
                                             setAreaSelect(e.target.value)
-                                        }} style={{ height: '48px'}}>
+                                        }} style={{ height: calculatorWidthAndHeight(48) }}>
                                             <option value="-1" selected disabled>Please Select Area</option>
                                             {
                                                 Object.keys(dataImage).map((item, index) => {
@@ -176,19 +207,19 @@ function RequestZone() {
                                             }
                                         </select>
                                     </div>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Area</label>
-                                        <input type="text" disabled value={area} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: '48px' }} />
+                                        <input type="text" disabled value={area} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                                     </div>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Shop Name</label>
-                                        <input type="text" placeholder='Input your Shop Name' value={shopName} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: '48px'  }} />
+                                        <input type="text" placeholder='Input your Shop Name' value={shopName} onChange={(e) => setShopName(e.target.value)} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                                     </div>
-                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: '4px' }}>
+                                    <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                         <label>Description</label>
-                                        <textarea className="w-100 rounded" style={{ height: '14vh'  }} value={description} onChange={(e) => setDescription(e.target.value)} name="" id=""></textarea>
+                                        <textarea className="w-100 rounded" style={{ height: '14vh' }} value={description} onChange={(e) => setDescription(e.target.value)} name="" id=""></textarea>
                                     </div>
-                                    <button className='btn px-4' style={{background: '#6D4C3D', border: '1px solid #000', color: '#FFE8D6', fontSize: '14px' , fontWeight: 500}} onClick={(e) => { justRequest() }}>NEXT</button>
+                                    <button className='btn px-4' style={{ background: '#6D4C3D', border: `${calculatorWidthAndHeight(1)} solid #000`, color: '#FFE8D6', fontSize: calculatorWidthAndHeight(14), fontWeight: 500 }} onClick={(e) => { justRequest() }}>NEXT</button>
 
                                 </div>
                             </div>

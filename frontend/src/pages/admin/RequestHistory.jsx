@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Template from "../../components/Template";
 import Modal from "../../components/Modal"; import { jwtDecode } from "jwt-decode";
 import axios from "axios";
-import data_shop_type from '../../conf/config';
+import config from '../../conf/config';
 import checkToken from '../../func/CheckToken'
 function RequestHistory() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,7 +49,7 @@ function RequestHistory() {
             navigate('/Login')
         }
         try {
-            const response = await axios.get('http://localhost:3333/api/history_request')
+            const response = await axios.get(config.api_url + '/api/history_request')
             const result = response.data
             if (result.status) {
                 setDataHistory(result.data)
@@ -61,10 +61,18 @@ function RequestHistory() {
 
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'admin') {
+            navigate(-1)
+            return
+        }
         fetchData()
     }, [])
 
-    // const [data_shop_type, setDataShopType] = useState([
+    // const [config.data_shop_type, setDataShopType] = useState([
     //     {
     //         name: 'Food'
     //     },
@@ -144,7 +152,7 @@ function RequestHistory() {
                                                         <td>{item.area}</td>
                                                         <td>{item.shop_name}</td>
                                                         <td>{item.shop_detail}</td>
-                                                        <td>{data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</td>
+                                                        <td>{config.data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name}</td>
                                                         <td>
 
                                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800, color: item.status == 'Approved' ? '#59A964' : item.status == 'Disapproved' ? '#C55D5D' : 'rgba(209, 168, 19, 0.99)' }}>{item.status}</p>
@@ -183,7 +191,7 @@ function RequestHistory() {
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Booking date</p>
                                             <p className="card-text m-0 p-0">{dataModal.date}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Product type</p>
-                                            <p className="card-text m-0 p-0">{data_shop_type[dataModal.shop_type ? dataModal.shop_type - 1 : 0].name}</p>
+                                            <p className="card-text m-0 p-0">{config.data_shop_type[dataModal.shop_type ? dataModal.shop_type - 1 : 0].name}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Name</p>
                                             <p className="card-text m-0 p-0">{dataModal.shop_name}</p>
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Shop Detail</p>

@@ -15,6 +15,9 @@ import Swal from "sweetalert2";
 import Modal from "../../components/Modal";
 import { Link, useNavigate } from 'react-router-dom'
 import checkToken from '../../func/CheckToken';
+import config from '../../conf/config';
+import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
+
 function SetRent() {
     const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,7 +85,7 @@ function SetRent() {
     const getData = async () => {
         checkToken_in_side();
         try {
-            const response = await axios.get('http://localhost:3333/api/get_rent')
+            const response = await axios.get(config.api_url + '/api/get_rent')
             const result = response.data
             if (result.status) {
                 const updatedData = {};
@@ -114,7 +117,7 @@ function SetRent() {
         checkToken_in_side();
 
         try {
-            const response = await axios.post('http://localhost:3333/api/update_rent', { data })
+            const response = await axios.post(config.api_url + '/api/update_rent', { data })
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -144,7 +147,7 @@ function SetRent() {
         checkToken_in_side();
 
         try {
-            const response = await axios.post('http://localhost:3333/api/delete_rent', { id })
+            const response = await axios.post(config.api_url + '/api/delete_rent', { id })
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -174,7 +177,7 @@ function SetRent() {
         checkToken_in_side();
 
         try {
-            const response = await axios.post('http://localhost:3333/api/insert_rent', { data })
+            const response = await axios.post(config.api_url + '/api/insert_rent', { data })
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -202,6 +205,14 @@ function SetRent() {
 
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'admin') {
+            navigate(-1)
+            return
+        }
         getData()
     }, [])
 
@@ -224,7 +235,7 @@ function SetRent() {
                         <div className="h-100 row g-0 p-2">
                             <div className="col-4 d-flex flex-column align-items-center justify-content-center h-100 gap-2 p-1">
                                 <div className="d-flex align-items-center justify-content-start flex-column h-50 w-100 gap-1">
-                                    <span className="text-start w-100" style={{ fontSize: '22px', fontWeight: 500 }}>MANAGE AREA</span>
+                                    <span className="text-start w-100" style={{ fontSize: calculatorWidthAndHeight(22), fontWeight: 500 }}>MANAGE AREA</span>
                                     <img src={dataImage[searchInput.charAt(0).toLocaleLowerCase()] || default_zone} alt="" className="w-100 rounded" style={{ objectFit: 'contain', maxHeight: '40vh' }} />
                                 </div>
                                 <div className="d-flex align-content-start flex-wrap gap-1 justify-content-start h-50 overflow-y-scroll w-100 p-2">
@@ -313,9 +324,9 @@ function SetRent() {
                                                                 <td></td>
                                                                 <td>
                                                                     <div className="d-flex align-items-center justify-content-center"
-                                                                        style={{background: item2.toggle ? '#ABC4AB' : '#DC3543', padding: '0.9vh', borderRadius: '0.5vh'}}
+                                                                        style={{background: !item2.toggle ? '#ABC4AB' : '#DC3543', padding: '0.9vh', borderRadius: '0.5vh'}}
                                                                     >
-                                                                        <span style={{fontWeight: 500}}>{item2.toggle ? 'Enable' : 'Disable'}</span>
+                                                                        <span style={{fontWeight: 500}}>{!item2.toggle ? 'Enable' : 'Disable'}</span>
                                                                     </div>
                                                                  
 
@@ -326,7 +337,7 @@ function SetRent() {
                                                                         setDataModal({ title: 'Edit', ...item2 })
                                                                         setIsModalOpen(true)
                                                                     }}>Edit</button>
-                                                                    <span className="px-1 text-secondary" style={{ fontSize: '12px' }}>
+                                                                    <span className="px-1 text-secondary" style={{ fontSize: calculatorWidthAndHeight(12) }}>
                                                                         {item2.update ? `(Last Update: ${formatDate(item2.update)})` : ''}
                                                                     </span>
                                                                 </td>
@@ -412,7 +423,7 @@ function SetRent() {
                         }
                         custom_footer={
                             <div className="d-flex align-items-center justify-content-center gap-2 w-100">
-                                {
+                                {/* {
                                     dataModal.title === 'Edit' && (
                                         <button className="btn w-100 btn-danger" onClick={(e) => {
                                             Swal.fire({
@@ -435,7 +446,7 @@ function SetRent() {
                                             )
                                         }}>DELETE</button>
                                     )
-                                }
+                                } */}
                                 <button className="btn w-100" style={{ background: '#ABC4AB' }} onClick={(e) => {
                                     if (dataModal.title === 'Edit') {
                                         updateData(dataModal)

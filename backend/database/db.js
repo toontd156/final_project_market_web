@@ -1,15 +1,15 @@
 const mysql2 = require('mysql2');
-
+require('dotenv').config();
 var host = 'localhost';
 // if (process.env.NODE_ENV === 'production') {
 //     host = 'mysql-server';
 // }
 
 const connection = mysql2.createConnection({
-    host: host,
-    user: 'root',
-    password: '',
-    database: 'map_rent',
+    host: process.env.MY_IP_DATABASE || host,
+    user: process.env.MY_IP_DATABASE_USER || 'root',
+    password: process.env.MY_IP_DATABASE_PASSWORD || '',
+    database: process.env.MY_IP_DATABASE_NAME || 'map_rent',
 });
 
 connection.connect((err) => {

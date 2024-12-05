@@ -4,6 +4,8 @@ import Modal from "../../components/Modal"; import { jwtDecode } from "jwt-decod
 import axios from "axios";
 import Swal from "sweetalert2";
 import checkToken from '../../func/CheckToken';
+import config from '../../conf/config';
+
 function ManageEvent() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchInput, setSearchInput] = useState('');
@@ -46,7 +48,7 @@ function ManageEvent() {
             navigate('/Login')
         }
         try {
-            const response = await axios.get('http://localhost:3333/api/get_data_ads')
+            const response = await axios.get(config.api_url + '/api/get_data_ads')
             const result = response.data
             if (result.status) {
                 setDataAds(result.data)
@@ -63,6 +65,14 @@ function ManageEvent() {
     };
 
     useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'admin') {
+            navigate(-1)
+            return
+        }
         fetchData()
     }, [])
 
@@ -83,7 +93,7 @@ function ManageEvent() {
         console.log('FormData:', Object.fromEntries(newData.entries())); // ตรวจสอบข้อมูลที่เพิ่มใน FormData
 
         try {
-            const response = await axios.post('http://localhost:3333/api/add_data_ads', newData)
+            const response = await axios.post(config.api_url + '/api/add_data_ads', newData)
             const result = response.data
             if (result.status) {
                 Swal.fire({
@@ -118,7 +128,7 @@ function ManageEvent() {
         console.log('FormData:', Object.fromEntries(newData.entries())); // ตรวจสอบข้อมูลที่เพิ่มใน FormData
 
         try {
-            const response = await axios.post('http://localhost:3333/api/edit_data_ads', newData)
+            const response = await axios.post(config.api_url + '/api/edit_data_ads', newData)
             const result = response.data
             if (result.status) {
                 Swal.fire({
