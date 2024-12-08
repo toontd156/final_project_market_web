@@ -58,7 +58,7 @@ function Login() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Login Failed',
-                    text: error.response.data.message
+                    text: JSON.stringify(error.response.data.message)
                 })
 
 
@@ -100,7 +100,7 @@ function Login() {
                                 <span>save password</span>
                             </div>
                             <div className="d-flex align-items-center">
-                                <Link to={'/'} style={{color: '#727D71'}}>Forgot Password?</Link>
+                                <Link to={'/ForgerPassword'} style={{color: '#727D71'}}>Forgot Password?</Link>
                             </div>
                         </div>
                         <div className="d-flex flex-column align-items-center justify-content-between" style={{ gap: '2vh' }}>

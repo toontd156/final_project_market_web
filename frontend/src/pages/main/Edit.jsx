@@ -296,8 +296,8 @@ function Edit() {
                                         ]
                                     })
                                     handleOpenModal()
-                                }} style={{ height: calculatorWidthAndHeight(48), padding: `${calculatorWidthAndHeight(2)} ${calculatorWidthAndHeight(40)}`, borderRadius: calculatorWidthAndHeight(8), background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}>Edit My Account</button>
-                                <button className='btn w-50' style={{ height: calculatorWidthAndHeight(48), padding: `${calculatorWidthAndHeight(2)} ${calculatorWidthAndHeight(40)}`, borderRadius: calculatorWidthAndHeight(8), background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}
+                                }} style={{ height: calculatorWidthAndHeight(48), padding: `${calculatorWidthAndHeight(2)} ${calculatorWidthAndHeight(10)}`, borderRadius: calculatorWidthAndHeight(8), background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}>Edit My Account</button>
+                                <button className='btn w-50' style={{ height: calculatorWidthAndHeight(48), padding: `${calculatorWidthAndHeight(2)} ${calculatorWidthAndHeight(10)}`, borderRadius: calculatorWidthAndHeight(8), background: 'rgba(109, 76, 61, 0.70)', border: '0.3vh solid #000' }}
                                     onClick={(e) => {
                                         setPassWordData({
                                             old_password: '',

@@ -143,20 +143,20 @@ function Payment() {
                         </div>
                     </div>
                     <div className="col d-flex flex-column align-items-center justify-content-center h-100 w-100 p-2 rounded" style={{ background: '#727D71' }}>
-                        <div className="p-2 d-flex flex-column align-items-center justify-content-between bg-info w-75 h-100 rounded" style={{ gap: calculatorWidthAndHeight(12) }}>
+                        <div className="p-2 d-flex flex-column align-items-center justify-content-between w-75 h-100 rounded" style={{ gap: calculatorWidthAndHeight(12) }}>
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Upcoming market days</label>
-                                <input type="text" disabled value={date_is_coming} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
+                                <input type="text" disabled value={date_is_coming} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Booking date</label>
-                                <input type="text" disabled value={nowDate} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
+                                <input type="text" disabled value={nowDate} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Product type</label>
                                 <select className='form-select' value={productType} onChange={(e) => {
 
-                                }} style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }}>
+                                }} style={{ height: calculatorWidthAndHeight(48) }}>
                                     <option value="0" selected disabled>Food</option>
                                     <option value="1" selected disabled>Clothes</option>
                                 </select>
@@ -164,21 +164,21 @@ function Payment() {
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Select zone</label>
                                 <select className='form-select' value={areaSelect} onChange={(e) => {
-                                }} style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }}>
+                                }} style={{ height: calculatorWidthAndHeight(48) }}>
                                     <option value="0" selected disabled>{areaSelect}</option>
                                 </select>
                             </div>
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Area</label>
-                                <input type="text" disabled value={area} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
+                                <input type="text" disabled value={area} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Shop Name</label>
-                                <input type="text" placeholder='Input your Shop Name' value={shopName} className='form-control' style={{ height: calculatorWidthAndHeight(48), background: '#FFE8D6' }} />
+                                <input type="text" placeholder='Input your Shop Name' value={shopName} className='form-control' style={{ height: calculatorWidthAndHeight(48) }} />
                             </div>
                             <div className="d-flex flex-column align-items-start justify-content-start w-100" style={{ gap: calculatorWidthAndHeight(4) }}>
                                 <label>Description</label>
-                                <textarea className="w-100 rounded" style={{ height: '14vh', background: '#FFE8D6' }} value={description} name="" id=""></textarea>
+                                <textarea className="w-100 rounded" style={{ height: '14vh' }} value={description} name="" id=""></textarea>
                             </div>
                             <div className="d-flex align-items-center justify-content-evenly gap-2 w-100">
 

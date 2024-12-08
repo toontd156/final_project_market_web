@@ -21,6 +21,9 @@ import calculatorWidthAndHeight from '../../func/CalculatorWidthAndHeight';
 function SetRent() {
     const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [nowDate, setNowDate] = useState('');
+    const [toggle_status, setToggleStatus] = useState('');
+    const [toggle_on_use, setToggleOnUse] = useState('0');
     const [dataModal, setDataModal] = useState(
         {
             area: '',
@@ -32,6 +35,14 @@ function SetRent() {
             size: ''
         }
     )
+    const getNextWeekday = (currentDate, weekday) => {
+        const date = new Date(currentDate);
+        const daysToAdd = (weekday - date.getDay() + 7) % 7 || 7;
+        date.setDate(date.getDate() + daysToAdd);
+        return date;
+    };
+
+
 
     const handleInputChange = (field, value) => {
         setDataModal((prevDataModal) => ({
@@ -84,8 +95,9 @@ function SetRent() {
 
     const getData = async () => {
         checkToken_in_side();
+        let date_next_market = nowDate.replace(/\//g, "-");
         try {
-            const response = await axios.get(config.api_url + '/api/get_rent')
+            const response = await axios.get(config.api_url + '/api/get_rent', { params: { date_next_market } });
             const result = response.data
             if (result.status) {
                 const updatedData = {};
@@ -94,12 +106,18 @@ function SetRent() {
                         updatedData[item.category_name] = [];
                     }
                     updatedData[item.category_name].push(item);
+
                 });
                 setSearchInput('');
                 setData(updatedData);
             }
         } catch (error) {
-            console.log(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Get Data Failed',
+                text: JSON.stringify(error.response.data.message)
+            })
+
         }
     }
     const checkToken_in_side = () => {
@@ -203,6 +221,30 @@ function SetRent() {
         }
     }
 
+    useEffect(() => {
+        const token = checkToken();
+        if (!token) {
+            navigate('/Login')
+            return
+        } else if (jwtDecode(token).role !== 'admin') {
+            navigate(-1)
+            return
+        }
+
+        const currentDate = new Date();
+        const currentDay = currentDate.getDay();
+
+        const nextWednesday = getNextWeekday(currentDate, 3);
+        const nextFriday = getNextWeekday(currentDate, 5);
+
+        let selectedDate;
+        if (currentDay === 0 || currentDay === 1 || currentDay === 2) {
+            selectedDate = nextWednesday;
+        } else if (currentDay === 3 || currentDay === 4 || currentDay === 5 || currentDay === 6) {
+            selectedDate = nextFriday;
+        }
+        setNowDate(selectedDate.toLocaleDateString("en-GB"));
+    }, [])
 
     useEffect(() => {
         const token = checkToken();
@@ -213,8 +255,9 @@ function SetRent() {
             navigate(-1)
             return
         }
+
         getData()
-    }, [])
+    }, [nowDate]);
 
     const formatDate = (date) => {
         const d = new Date(date);
@@ -261,7 +304,7 @@ function SetRent() {
                                                     price: 0,
                                                     rent: 0,
                                                     size: '',
-                                                    toggle: 0
+                                                    toggle: "1"
                                                 })
                                                 setIsModalOpen(true)
 
@@ -277,20 +320,48 @@ function SetRent() {
                                                 <th scope="col">Area</th>
                                                 <th scope="col">Size(Meter)</th>
                                                 <th scope="col">Price(Baht)</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col" onClick={(e) => {
+                                                    if (toggle_status === '') {
+                                                        setToggleStatus('0')
+                                                    } else if (toggle_status === '0') {
+                                                        setToggleStatus('1')
+                                                    } else if (toggle_status === '1') {
+                                                        setToggleStatus('2')
+                                                    } else if (toggle_status === '2') {
+                                                        setToggleStatus('')
+                                                    }
+                                                }}>Area Status <span style={{fontSize: calculatorWidthAndHeight(12)}}>({toggle_status == '' ? 'All' : toggle_status == '0' ? 'Available' : toggle_status == '1' ? 'Pending' : 'Reserved'})</span></th>
                                                 <th scope="col">Tenant Name</th>
-                                                <th scope="col">On Use</th>
+                                                <th scope="col" onClick={(e) => {
+                                                    if (toggle_on_use === '0') {
+                                                        setToggleOnUse('1')
+                                                    } else if (toggle_on_use === '1') {
+                                                        setToggleOnUse('2')
+                                                    } else if (toggle_on_use === '2') {
+                                                        setToggleOnUse('0')
+                                                    }
+                                                }}>On Use <span style={{fontSize: calculatorWidthAndHeight(12)}}>({toggle_on_use == '0' ? 'All' : toggle_on_use == '1' ? 'Enable' : 'Disable'})</span></th>
                                                 <th scope="col" style={{ width: '28vh' }}>Update</th>
                                             </tr>
                                         </thead>
                                         <tbody className="h-100 rounded">
                                             {
                                                 Object.keys(data).slice()
-                                                    .sort((a, b) => a.localeCompare(b)).filter(key => key.toLowerCase().includes(searchInput.toLowerCase()) || data[key].filter(item => item.area.toLowerCase().includes(searchInput.toLowerCase())).length > 0).map((key, index) => (
-                                                        data[key].map((item2, index2) => (
+                                                    .sort((a, b) => a.localeCompare(b)).filter(key => key.toLowerCase().includes(searchInput.toLowerCase()) || data[key].filter(item => item.area.toLowerCase().replace(/\s+/g, '').includes(searchInput.toLowerCase())).length > 0 || data[key].filter(item => item.shop_name && item.shop_name.toLowerCase().includes(searchInput.toLowerCase())).length > 0).map((key, index) => (
+                                                        data[key].filter((data_sm) => {
+                                                            if (toggle_status === '') {
+                                                                return data_sm
+                                                            }
+                                                            if (data_sm.status.toLowerCase() === toggle_status.toLowerCase()) {
+                                                                return data_sm
+                                                            }
+                                                            if (data_sm.toggle === toggle_on_use) {
+                                                                return data_sm
+                                                            }
+                                                        }).map((item2, index2) => (
                                                             <tr
                                                                 key={`${key}-${index2}`}
-                                                                className={`${item2.price ? '' : 'table-active'} rounded `}
+                                                                className={`${!item2.price || !item2.toggle ? '' : 'table-active'} rounded `}
                                                                 onClick={(e) => {
                                                                     setSearchInput(item2.area)
                                                                 }}
@@ -315,20 +386,20 @@ function SetRent() {
                                                                 /> */}
                                                                 </td>
                                                                 <td>
-                                                                    <select name="" id="" value={item2.rent} disabled className="form-control">
+                                                                    <select name="" id="" value={item2.status} disabled className="form-control">
                                                                         <option value="0">Available</option>
-                                                                        <option value="1">Waiting Confirmation</option>
+                                                                        <option value="1">Pending</option>
                                                                         <option value="2">Reserved</option>
                                                                     </select>
                                                                 </td>
-                                                                <td></td>
+                                                                <td>{item2.shop_name}</td>
                                                                 <td>
                                                                     <div className="d-flex align-items-center justify-content-center"
-                                                                        style={{background: !item2.toggle ? '#ABC4AB' : '#DC3543', padding: '0.9vh', borderRadius: '0.5vh'}}
+                                                                        style={{ background: !item2.toggle ? '#ABC4AB' : '#DC3543', padding: '0.9vh', borderRadius: '0.5vh' }}
                                                                     >
-                                                                        <span style={{fontWeight: 500}}>{!item2.toggle ? 'Enable' : 'Disable'}</span>
+                                                                        <span style={{ fontWeight: 500 }}>{!item2.toggle ? 'Enable' : 'Disable'}</span>
                                                                     </div>
-                                                                 
+
 
                                                                 </td>
                                                                 <td>
@@ -396,16 +467,16 @@ function SetRent() {
                                                     handleInputChange('price', e.target.value);
                                                 }} value={dataModal.price} />
                                             </div>
-                                            <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Area Status</p>
+                                            {/* <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Area Status</p>
                                             <div className="d-flex align-items-center gap-2">
-                                                <select name="" id="" value={dataModal.rent} onChange={(e) => {
-                                                    handleInputChange('rent', e.target.value);
+                                                <select name="" id="" value={dataModal.status} onChange={(e) => {
+                                                    handleInputChange('status', e.target.value);
                                                 }} className="form-control">
                                                     <option value="0">Available</option>
-                                                    <option value="1">Waiting Confirmation</option>
+                                                    <option value="1">Pending</option>
                                                     <option value="2">Reserved</option>
                                                 </select>
-                                            </div>
+                                            </div> */}
                                             <p className="card-text m-0 p-0" style={{ fontWeight: 800 }}>Rent Status</p>
                                             <div className="d-flex align-items-center gap-2">
                                                 <select name="" id="" value={dataModal.toggle} onChange={(e) => {

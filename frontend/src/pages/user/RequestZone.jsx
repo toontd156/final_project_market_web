@@ -44,8 +44,9 @@ function RequestZone() {
         "i": i_zone
     });
     const getArea = async () => {
+        console.log(date_is_coming)
         try {
-            const response = await axios.get(config.api_url + '/api/get_area')
+            const response = await axios.get(config.api_url + '/api/get_area', { params: { date: date_is_coming } })
             const result = response.data
             if (result.status) {
                 for (let i = 0; i < result.data.length; i++) {
@@ -59,6 +60,7 @@ function RequestZone() {
                         }
                     }
                 }
+                console.log(result.data)
                 setAreaList(result.data)
 
             }

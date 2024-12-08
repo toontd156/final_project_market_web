@@ -4,9 +4,11 @@ import Modal from "../../components/Modal"; import { jwtDecode } from "jwt-decod
 import axios from "axios";
 import config from '../../conf/config';
 import checkToken from '../../func/CheckToken'
+import calculatorWidthAndHeight from "../../func/CalculatorWidthAndHeight";
 function RequestHistory() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchInput, setSearchInput] = useState('');
+    const [searchDate, setSearchDate] = useState('');
     const [dataModal, setDataModal] = useState(
         {
             image_name: '',
@@ -97,8 +99,15 @@ function RequestHistory() {
                         }}>
                             <div className="d-flex align-items-center justify-content-between w-100">
                                 <h2 className="px-1">Confirmation History</h2>
-                                <input type="text" placeholder='Search A' className="form-control" style={{ width: '30vh' }} />
+                                <div className="d-flex align-items-center justify-content-end" style={{gap: calculatorWidthAndHeight(10)}}>
+                                    <input type="text" placeholder='Search A' className="form-control" value={searchInput} onChange={(e) => { setSearchInput(e.target.value) }} style={{ width: '30vh' }} />
+                                    <input type="date" className="form-control" value={searchDate} onChange={(e) => {
+                                        let cover = e.target.value.replace(/\//g, "-");
+                                        const [year, month, day] = cover.split("-");
+                                        setSearchDate(`${day}-${month}-${year}`);
+                                     }} style={{ width: '18vh' }} />
 
+                                </div>
                             </div>
                             <table className="table  rounded " >
                                 <thead>
@@ -118,13 +127,15 @@ function RequestHistory() {
                                         data_history.filter((item) => {
                                             if (searchInput === '') {
                                                 return item
-                                            } else if (item.area.toLowerCase().includes(searchInput.toLowerCase)) {
+                                            } else if (item.area.toLowerCase().includes(searchInput.toLowerCase())) {
                                                 return item
-                                            } else if (item.shop_name.toLowerCase().includes(searchInput.toLowerCase)) {
+                                            } else if (item.shop_name.toLowerCase().includes(searchInput.toLowerCase())) {
                                                 return item
-                                            } else if (item.shop_detail.toLowerCase().includes(searchInput.toLowerCase)) {
+                                            } else if (config.data_shop_type[item.shop_type ? item.shop_type - 1 : 0].name.toLowerCase().includes(searchInput.toLowerCase())) {
                                                 return item
-                                            } else if (item.date_market.toLowerCase().includes(searchInput.toLowerCase)) {
+                                            } else if (item.status.toLowerCase().includes(searchInput.toLowerCase())) {
+                                                return item
+                                            } else if (item.date_market.toLowerCase().includes(searchDate.toLowerCase())) {
                                                 return item
                                             }
                                         })

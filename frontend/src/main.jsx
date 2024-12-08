@@ -13,6 +13,7 @@ import ManageUser from './pages/admin/ManageUser.jsx'
 import RequestHistory from './pages/admin/RequestHistory.jsx'
 import Edit from './pages/main/Edit.jsx'
 import ManageEvent from './pages/admin/ManageEvent.jsx'
+import ForgerPassword from './pages/main/ForgerPassword.jsx'
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -69,6 +70,10 @@ const router = createBrowserRouter([
   {
     path: "/ManageEvent",
     element: <ManageEvent />,
+  },
+  {
+    path: "/ForgerPassword",
+    element: <ForgerPassword />,
   }
 ]);
 

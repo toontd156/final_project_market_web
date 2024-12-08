@@ -82,7 +82,6 @@ function Home() {
             const decodeToken = jwtDecode(token);
             setRoleIsLogin(decodeToken.role)
             if (decodeToken.role === 'admin') {
-                console.log('fetch data for chart');
                 fetchDataForChart(selectedDate.toLocaleDateString("en-GB"));
             }
         }
@@ -120,7 +119,7 @@ function Home() {
                 datasets: [
                     {
                         ...prevState.datasets[0],
-                        data: [date_res.Approve, date_res.Pending, date_res.Disapproved],
+                        data: [date_res.Approved, date_res.Pending, date_res.Disapproved],
                     },
                 ],
             }));
@@ -361,7 +360,7 @@ function Home() {
                                                             borderRadius: calculatorWidthAndHeight(20),
                                                         }}
                                                     >
-                                                        {label}: {count} ({percentage}%) {/* Display raw value and percentage */}
+                                                        {label}: {count} ({isNaN(percentage) ? 0 : percentage}%) {/* Display raw value and percentage */}
                                                     </span>
                                                 </div>
                                             )
@@ -424,7 +423,7 @@ function Home() {
 
                         </div>
                     </div>
-                    <div className="container-fluid mt-5" style={{}}>
+                    <div className="container-fluid mt-5 overflow-x-hidden" style={{}}>
                         <div className="w-100 h-100 rounded" style={{ background: 'rgba(234, 224, 213, 0.50)', padding: '4vh' }}>
                             <div className="w-100 d-flex align-items-center justify-content-between">
                                 <div className="w-50 d-flex align-items-center">

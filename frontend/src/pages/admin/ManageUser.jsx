@@ -18,37 +18,27 @@ function ManageUser() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [searchRole, setSearchRole] = useState('user');
     const [sortConfig, setSortConfig] = useState({ key: 'toggle', direction: 'asc' });
-    const handleSortToggle = () => {
-        setSortConfig((prevState) => ({
-            key: 'toggle',
-            direction: prevState.direction === 'asc' ? 'desc' : 'asc',
-        }));
-    };
 
-    const sortedData = [...data_user]
+
+    const sortedData = data_user
         .filter((val) => {
-            if (searchInput === '' && val.role === searchRole) {
-                return val;
-            }
-            if (
-                (val.email.toLowerCase().includes(searchInput.toLowerCase()) ||
-                    val.fullname.toLowerCase().includes(searchInput.toLowerCase())) &&
-                val.role === searchRole
-            ) {
-                return val;
-            }
-            return false;
+            const inputMatch = searchInput === '' ||
+                val.email.toLowerCase().includes(searchInput.toLowerCase()) ||
+                val.shop_name && (val.shop_name.toLowerCase().includes(searchInput.toLowerCase())) ||
+                val.fullname.toLowerCase().includes(searchInput.toLowerCase());
+
+            const roleMatch = val.role === searchRole;
+
+            return inputMatch && roleMatch;
         })
         .sort((a, b) => {
             if (sortConfig.key === 'toggle') {
-                if (sortConfig.direction === 'asc') {
-                    return a.toggle === b.toggle ? 0 : a.toggle ? -1 : 1;
-                } else {
-                    return a.toggle === b.toggle ? 0 : a.toggle ? 1 : -1;
-                }
+                const direction = sortConfig.direction === 'asc' ? 1 : -1;
+                return a.toggle === b.toggle ? 0 : a.toggle ? -direction : direction;
             }
-            return 0;
+            return 0; 
         });
+
     const [dataModal, setDataModal] = useState(
         {
             fullname: '',
@@ -81,6 +71,7 @@ function ManageUser() {
             const response = await axios.get(config.api_url + '/api/user_all')
             const result = response.data
             if (result.status) {
+                console.log(result.data)
                 setDataUser(result.data)
                 setAllAdmin(result.data.filter((val) => val.role === 'admin').length)
                 setAllUser(result.data.filter((val) => val.role === 'user').length)
@@ -277,12 +268,12 @@ function ManageUser() {
                                 <div className="d-flex flex-column align-items-center justify-content-start w-100" style={{ gap: '0.4vh' }}>
                                     <div className="d-flex align-items-center justify-content-between w-100">
                                         <span className="text-start w-100" style={{ fontSize: calculatorWidthAndHeight(22), fontWeight: 500 }}>MANAGE USER</span>
-                                        <div className="d-flex align-items-center justify-content-end form-group w-50" style={{gap: '0.7vh'}}>
-                                            <input type="text" placeholder='Search A' className="form-control" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} style={{ width: '30vh' }} />
+                                        <div className="d-flex align-items-center justify-content-end form-group w-50" style={{ gap: '0.7vh' }}>
+                                            <input type="text" placeholder='Search' className="form-control" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} style={{ width: '30vh' }} />
                                             <div className="d-flex align-items-center justify-content-between ">
 
                                                 <div className="d-flex align-items-center justify-content-center">
-                                                    <button className="btn btn-primary" onClick={(e) => {
+                                                    <button className="btn btn-primary" style={{ fontSize: calculatorWidthAndHeight(20), maxHeight: calculatorWidthAndHeight(48) }} onClick={(e) => {
                                                         setDataModal(
                                                             {
                                                                 type: 'add',
@@ -292,11 +283,11 @@ function ManageUser() {
                                                                 password: '',
                                                                 shop_name: null,
                                                                 shop_detail: null,
-                                                                role: 'user'
+                                                                role: 'admin'
                                                             }
                                                         )
                                                         handleOpenModal()
-                                                    }}>ADD USER</button>
+                                                    }}>ADD ADMIN</button>
 
                                                 </div>
                                             </div>
@@ -317,8 +308,8 @@ function ManageUser() {
 
                                 </div>
                                 <div className="d-flex flex-column align-items-center justify-content-start w-100 h-100 rounded">
-                                    <table className="table  rounded " >
-                                        <thead>
+                                    <table className="table  rounded w-100" >
+                                        <thead className="w-100">
                                             <tr>
                                                 <th scope="col" style={{ width: '6vh' }}>#</th>
                                                 <th scope="col">Register Date</th>
@@ -326,37 +317,29 @@ function ManageUser() {
                                                 <th scope="col">EMAIL</th>
                                                 <th scope="col">PHONE</th>
                                                 <th scope="col">ROLE</th>
-                                                <th scope="col">SHOP NAME</th>
-                                                <th scope="col">SHOP DETAIL</th>
+                                                {
+                                                    searchRole === 'user' && (
+                                                        <>
+                                                            <th scope="col">SHOP NAME</th>
+                                                            <th scope="col">SHOP DETAIL</th>
+                                                        </>
+                                                    )
+                                                }
+
                                                 <th scope="col" onClick={handleSortToggle} style={{ cursor: 'pointer' }}>
                                                     TOGGLE {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                                                </th>                                                <th scope="col">MANAGE</th>
+                                                </th>
+                                                <th scope="col">MANAGE</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="h-100 ">
+                                        <tbody className="h-100 w-100">
                                             {
                                                 sortedData.map((val, index) => {
                                                     return (
                                                         <tr key={index}
-                                                            className="hov"
+                                                            className=""
                                                             style={{ verticalAlign: 'middle' }}
-                                                            onClick={(e) => {
-                                                                setDataModal(
-                                                                    {
-                                                                        type: 'edit',
-                                                                        id: val.id,
-                                                                        fullname: val.fullname,
-                                                                        email: val.email,
-                                                                        phone: val.phone,
-                                                                        shop_name: val.shop_name,
-                                                                        shop_detail: val.shop_detail,
-                                                                        role: val.role,
-                                                                        toggle: val.toggle ? true : false,
-                                                                        reason_toggle: val.reason_toggle || undefined,
-                                                                    }
-                                                                )
-                                                                handleOpenModal()
-                                                            }}
+
                                                         >
                                                             <th scope="row">{index + 1}</th>
                                                             <td>{formatDate(val.create_at)}</td>
@@ -364,12 +347,18 @@ function ManageUser() {
                                                             <td>{val.email}</td>
                                                             <td>{val.phone}</td>
                                                             <td>{val.role}</td>
-                                                            <td>{val.shop_name}</td>
-                                                            <td>{val.shop_detail}</td>
+                                                            {
+                                                                searchRole === 'user' && (
+                                                                    <>
+                                                                        <td>{val.shop_name}</td>
+                                                                        <td>{val.shop_detail}</td>
+                                                                    </>
+                                                                )
+                                                            }
                                                             <td>
                                                                 <div className="d-flex align-items-center justify-content-start">
-                                                                    <div className=" d-flex align-items-center justify-content-center" style={{ background: val.toggle ? '#ABC4AB' : '#DC3543', color: "#fff", padding: '0.9vh 1.2vh', borderRadius: '0.6vh' }}>
-                                                                        <span style={{ fontSize: '1.6vh', fontWeight: 500 }}>{val.toggle ? 'ENABLE' : 'DISABLE'}</span>
+                                                                    <div className=" d-flex align-items-center justify-content-center" style={{ background: val.toggle == 1 ? '#ABC4AB' : '#DC3543', color: "#fff", padding: '0.9vh 1.2vh', borderRadius: '0.6vh' }}>
+                                                                        <span style={{ fontSize: '1.6vh', fontWeight: 500 }}>{val.toggle == 1 ? 'ENABLE' : 'DISABLE'}</span>
                                                                     </div>
                                                                     {/* <button className="btn" style={{ background: val.toggle ? '#ABC4AB' : '#DC3543', color: "#fff" }} onClick={(e) => {
                                                                         Swal.fire({
@@ -411,62 +400,102 @@ function ManageUser() {
                                                             <td className="d-flex align-items-center justify-content-start " style={{ gap: '0.6vh' }}>
                                                                 {
                                                                     searchRole == 'user' && (
-                                                                        <button className="btn text-white" style={{ background: '#ABC4AB' }} onClick={(e) => {
-                                                                            Swal.fire({
-                                                                                title: 'Are you sure?',
-                                                                                text: `You want to change ${val.email} to admin!`,
-                                                                                icon: 'warning',
-                                                                                showCancelButton: true,
-                                                                                confirmButtonText: 'Yes, change it!',
-                                                                                cancelButtonText: 'No, keep it'
-                                                                            }).then((result) => {
-                                                                                if (result.isConfirmed) {
-                                                                                    Swal.fire(
-                                                                                        'Changed!',
-                                                                                        'User has been changed to admin.',
-                                                                                        'success'
-                                                                                    )
-                                                                                    change_user(val.id, 'admin')
-                                                                                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                                                                    Swal.fire(
-                                                                                        'Cancelled',
-                                                                                        'User is safe :)',
-                                                                                        'error'
-                                                                                    )
+                                                                        <>
+                                                                            <button className="btn text-white btn-warning" onClick={(e) => {
+                                                                                setDataModal(
+                                                                                    {
+                                                                                        type: 'edit',
+                                                                                        id: val.id,
+                                                                                        fullname: val.fullname,
+                                                                                        email: val.email,
+                                                                                        phone: val.phone,
+                                                                                        shop_name: val.shop_name,
+                                                                                        shop_detail: val.shop_detail,
+                                                                                        role: val.role,
+                                                                                        toggle: val.toggle ? true : false,
+                                                                                        reason_toggle: val.reason_toggle || undefined,
+                                                                                    }
+                                                                                )
+                                                                                handleOpenModal()
+                                                                            }}>EDIT</button>
+                                                                            <button className="btn text-white" style={{ background: '#ABC4AB' }} onClick={(e) => {
+                                                                                Swal.fire({
+                                                                                    title: 'Are you sure?',
+                                                                                    text: `You want to change ${val.email} to admin!`,
+                                                                                    icon: 'warning',
+                                                                                    showCancelButton: true,
+                                                                                    confirmButtonText: 'Yes, change it!',
+                                                                                    cancelButtonText: 'No, keep it'
+                                                                                }).then((result) => {
+                                                                                    if (result.isConfirmed) {
+                                                                                        Swal.fire(
+                                                                                            'Changed!',
+                                                                                            'User has been changed to admin.',
+                                                                                            'success'
+                                                                                        )
+                                                                                        change_user(val.id, 'admin')
+                                                                                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                                                                        Swal.fire(
+                                                                                            'Cancelled',
+                                                                                            'User is safe :)',
+                                                                                            'error'
+                                                                                        )
+                                                                                    }
                                                                                 }
-                                                                            }
-                                                                            )
-                                                                        }}>ADD NEW ADMIN</button>
+                                                                                )
+                                                                            }}>ADD NEW ADMIN</button>
+                                                                        </>
+
                                                                     )
                                                                 }
                                                                 {
                                                                     searchRole == 'admin' && (
-                                                                        <button className="btn text-white" style={{ background: '#ABC4AB' }} onClick={(e) => {
-                                                                            Swal.fire({
-                                                                                title: 'Are you sure?',
-                                                                                text: `You want to change ${val.email} to user!`,
-                                                                                icon: 'warning',
-                                                                                showCancelButton: true,
-                                                                                confirmButtonText: 'Yes, change it!',
-                                                                                cancelButtonText: 'No, keep it'
-                                                                            }).then((result) => {
-                                                                                if (result.isConfirmed) {
-                                                                                    Swal.fire(
-                                                                                        'Changed!',
-                                                                                        'Admin has been changed to user.',
-                                                                                        'success'
-                                                                                    )
-                                                                                    change_user(val.id, 'user')
-                                                                                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                                                                    Swal.fire(
-                                                                                        'Cancelled',
-                                                                                        'Admin is safe :)',
-                                                                                        'error'
-                                                                                    )
+                                                                        <>
+                                                                            <button className="btn text-white btn-warning" onClick={(e) => {
+                                                                                setDataModal(
+                                                                                    {
+                                                                                        type: 'edit',
+                                                                                        id: val.id,
+                                                                                        fullname: val.fullname,
+                                                                                        email: val.email,
+                                                                                        phone: val.phone,
+                                                                                        shop_name: val.shop_name,
+                                                                                        shop_detail: val.shop_detail,
+                                                                                        role: val.role,
+                                                                                        toggle: val.toggle ? true : false,
+                                                                                        reason_toggle: val.reason_toggle || undefined,
+                                                                                    }
+                                                                                )
+                                                                                handleOpenModal()
+                                                                            }}>EDIT</button>
+                                                                            <button className="btn text-white" style={{ background: '#ABC4AB' }} onClick={(e) => {
+                                                                                Swal.fire({
+                                                                                    title: 'Are you sure?',
+                                                                                    text: `You want to change ${val.email} to user!`,
+                                                                                    icon: 'warning',
+                                                                                    showCancelButton: true,
+                                                                                    confirmButtonText: 'Yes, change it!',
+                                                                                    cancelButtonText: 'No, keep it'
+                                                                                }).then((result) => {
+                                                                                    if (result.isConfirmed) {
+                                                                                        Swal.fire(
+                                                                                            'Changed!',
+                                                                                            'Admin has been changed to user.',
+                                                                                            'success'
+                                                                                        )
+                                                                                        change_user(val.id, 'user')
+                                                                                    } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                                                                        Swal.fire(
+                                                                                            'Cancelled',
+                                                                                            'Admin is safe :)',
+                                                                                            'error'
+                                                                                        )
+                                                                                    }
                                                                                 }
-                                                                            }
-                                                                            )
-                                                                        }}>REMOVE ADMIN ROLE</button>
+                                                                                )
+                                                                            }}>REMOVE ADMIN ROLE</button>
+                                                                        </>
+
                                                                     )
                                                                 }
 
@@ -488,7 +517,7 @@ function ManageUser() {
                     <Modal
                         isOpen={isModalOpen}
                         onClose={handleCloseModal}
-                        title={dataModal.type == 'add' ? 'ADD USER' : 'EDIT USER'}
+                        title={dataModal.type == 'add' ? 'ADD ADMIN' : 'EDIT USER'}
                         children={
                             <div className="d-flex flex-column align-items-center justify-content-center w-100" style={{ gap: '0.6vh' }}>
                                 <div className="w-100 d-flex align-items-center justify-content-center" style={{ gap: '0.2vh' }}>
@@ -517,17 +546,7 @@ function ManageUser() {
                                     }
                                 </div>
                                 <div className="w-100 d-flex align-items-center justify-content-center" style={{ gap: '0.2vh' }}>
-                                    <div className="form-group w-100">
-                                        <label htmlFor="shop_name" className="form-label">Shop Name</label>
-                                        <input type="text" placeholder='Shop Name' className="form-control" value={dataModal.shop_name} onChange={(e) => handleInputChange('shop_name', e.target.value)} />
-                                    </div>
-                                    <div className="form-group w-100">
-                                        <label htmlFor="shop_detail" className="form-label">Shop Detail</label>
-                                        <input type="text" placeholder='Shop Detail' className="form-control" value={dataModal.shop_detail} onChange={(e) => handleInputChange('shop_detail', e.target.value)} />
-                                    </div>
-                                </div>
-                                <div className="w-100 d-flex align-items-center justify-content-center" style={{ gap: '0.2vh' }}>
-                                    {
+                                    {/* {
                                         dataModal.type === 'add' && (
                                             <div className="form-group w-100">
                                                 <label htmlFor="role" className="form-label">Role</label>
@@ -537,7 +556,7 @@ function ManageUser() {
                                                 </select>
                                             </div>
                                         )
-                                    }
+                                    } */}
                                     {
                                         dataModal.toggle !== undefined && (
                                             <div className="form-group w-100">

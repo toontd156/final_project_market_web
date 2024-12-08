@@ -10,6 +10,9 @@ const path = require('path');
 app.use(cors());
 require('dotenv').config();
 app.use(express.json());
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+let otpStorage = {};
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -80,6 +83,7 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/get_area', (req, res) => {
+    const { date } = req.query;
     const query = `SELECT 
     data_zone.id, 
     data_zone.category_id, 
@@ -95,13 +99,37 @@ app.get('/api/get_area', (req, res) => {
     LEFT JOIN category_zone ON 
         data_zone.category_id = category_zone.id
     LEFT JOIN user_history ON
-        data_zone.id = user_history.zone_id
+        user_history.zone_id = data_zone.id
     `;
     connection.query(query, (err, result) => {
         if (err) {
             res.status(500).send({ status: false, message: err });
         }
-        res.status(200).send({ status: true, data: result });
+        let new_result = [];
+        for (let i = 0; i < result.length; i++) {
+            let sm = result[i];
+            if (sm.date_market !== null) {
+                if (sm.date_market === date) {
+                    const checkIdInNewResult = new_result.find((item) => item.id === sm.id);
+                    if (!checkIdInNewResult) {
+                        new_result.push(sm);
+                    } else {
+                        // update status
+                        checkIdInNewResult.status = sm.status;
+                        checkIdInNewResult.date_market = sm.date_market;
+                    }
+                } else {
+                    const checkIdInNewResult = new_result.find((item) => item.id === sm.id);
+                    if (!checkIdInNewResult) {
+                        new_result.push(sm);
+                    }
+                }
+            } else {
+                new_result.push(sm);
+            }
+        }
+        console.log(new_result);
+        res.status(200).send({ status: true, data: new_result });
     });
 });
 
@@ -302,6 +330,8 @@ app.get('/api/history_request', (req, res) => {
 });
 
 app.get('/api/get_rent', (req, res) => {
+    const { date_next_market } = req.query;
+    console.log(date_next_market, 'date_next_market');
     const query = `SELECT 
         data_zone.id,
         data_zone.category_id,
@@ -315,17 +345,42 @@ app.get('/api/get_rent', (req, res) => {
         data_zone.toggle
         FROM 
             data_zone
-        JOIN 
+        LEFT JOIN 
             category_zone
             ON data_zone.category_id = category_zone.id
-    `;
 
+    `;
+    let data_cover = {
+        Approved: '2',
+        DisApproved: '0',
+        Pending: '1'
+    }
     connection.query(query, (err, result) => {
         if (err) {
             res.status(500).send({ status: false, message: err });
         }
-        console.log(result);
-        res.status(200).send({ status: true, data: result });
+
+        const queryHistory = `SELECT user_history.id_user, user_history.zone_id, user_history.status, users.shop_name FROM user_history LEFT JOIN users ON user_history.id_user = users.id WHERE user_history.date_market = ?`;
+        connection.query(queryHistory, [date_next_market], (err, result2) => {
+            if (err) {
+                res.status(500).send({ status: false, message: err });
+            }
+            for (let i = 0; i < result2.length; i++) {
+                let sm_2 = result2[i];
+                if (sm_2.status !== 'DisApproved') {
+                    for (let j = 0; j < result.length; j++) {
+                        let sm = result[j];
+                        sm.status = '0'
+                        if (sm.id === sm_2.zone_id) {
+                            sm.shop_name = sm_2.shop_name;
+                            sm.status = data_cover[sm_2.status];
+                        }
+                    }
+                }
+            }
+            res.status(200).send({ status: true, data: result });
+        });
+        // res.status(200).send({ status: true, data: result });
     });
 
 });
@@ -347,8 +402,8 @@ app.post('/api/insert_rent', (req, res) => {
             if (result2.length > 0) {
                 res.status(400).send({ status: false, message: 'Zone already exist' });
             } else {
-                const query = `INSERT INTO data_zone (price, size_market, name_zone, category_id, toggle) VALUES (?, ?, ?, ?, ?, ?)`;
-                connection.query(query, [price,  size, name_zone, result[0].id, toggle], (err, result) => {
+                const query = `INSERT INTO data_zone (price, size_market, name_zone, category_id, toggle) VALUES (?, ?, ?, ?, ?)`;
+                connection.query(query, [price, size, name_zone, result[0].id, toggle], (err, result) => {
                     if (err) {
                         res.status(500).send({ status: false, message: err });
                     }
@@ -514,12 +569,12 @@ app.post('/api/approve_request', async (req, res) => {
 });
 
 app.get('/api/user_all', async (req, res) => {
-    const query = `SELECT id, fullname, email, phone, role, shop_name, shop_detail, create_at, toggle, reason_toggle FROM users`;
+    const query = `SELECT id, fullname, email, phone, role, shop_name, shop_detail, create_at, toggle, reason_toggle FROM users ORDER BY id DESC`;
     connection.query(query, (err, result) => {
         if (err) {
             res.status(500).send({ status: false, message: err });
         }
-
+        console.log(result);
         res.status(200).send({ status: true, data: result });
     });
 })
@@ -534,7 +589,7 @@ app.get('/api/getDataForChart', async (req, res) => {
         }
         // Approve, Disapproved, Pending
         let cover_result = {
-            Approve: 0,
+            Approved: 0,
             Disapproved: 0,
             Pending: 0
         }
@@ -667,7 +722,7 @@ app.post('/api/update_my_password/:id', async (req, res) => {
 });
 
 app.post('/api/add_user_with_admin', (req, res) => {
-    const { fullname, email, password, phone, shop_name, shop_detail, role } = req.body;
+    const { fullname, email, password, phone, role } = req.body;
     const queryCheck = `SELECT email, phone FROM users WHERE email = ? AND phone = ?`;
     connection.query(queryCheck, [email, phone], async (err, result) => {
         if (err) {
@@ -677,8 +732,8 @@ app.post('/api/add_user_with_admin', (req, res) => {
             res.status(400).send({ status: false, message: 'Email or Phone already registered' });
         } else {
             const hash = await bcrypt.hashSync(password, 10);
-            const query = `INSERT INTO users (fullname, email, password, phone, shop_name, shop_detail, role) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            connection.query(query, [fullname, email, hash, phone, shop_name, shop_detail, role], (err, result) => {
+            const query = `INSERT INTO users (fullname, email, password, phone, role) VALUES (?, ?, ?, ?, ?)`;
+            connection.query(query, [fullname, email, hash, phone, role], (err, result) => {
                 if (err) {
                     res.status(500).send({ status: false, message: err });
                 }
@@ -785,7 +840,6 @@ app.post('/api/get_market_on_event', (req, res) => {
         ORDER BY 
             user_history.id DESC;
     `;
-    console.log(date);
     connection.query(query, [date], (err, result) => {
         if (err) {
             res.status(500).send({ status: false, message: err });
@@ -793,6 +847,74 @@ app.post('/api/get_market_on_event', (req, res) => {
             console.log(result);
             res.status(200).send({ status: true, data: result });
         }
+    });
+});
+
+function generateOtp() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: "maketmfu@gmail.com",
+        pass: "lxal dpam guat dkti",
+    },
+});
+
+app.post('/api/forgetPassword', async (req, res) => {
+    const { email } = req.body;
+    const query = `SELECT id, email FROM users WHERE email = ?`;
+    connection.query(query, [email], async (err, result) => {
+        if (err) {
+            res.status(500).send({ status: false, message: err });
+        }
+        if (result.length === 0) {
+            return res.status(404).send({ status: false, message: 'Email not found' });
+        }
+        const otp = generateOtp();
+        otpStorage[email] = { otp, expiresAt: Date.now() + 5 * 60 * 1000 };
+
+        const mailOptions = {
+            from: "maketmfu@gmail.com",
+            to: email,
+            subject: "Your OTP for Password Reset",
+            text: `Your OTP is: ${otp}`,
+        };
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Error sending email:", error);
+                return res.status(500).json({ message: "Failed to send OTP" });
+            }
+            console.log("Email sent:", info.response);
+            res.status(200).send({ status: true, message: "OTP sent to your email" });
+        });
+    });
+});
+
+app.post('/api/verifyOtp', async (req, res) => {
+    const { email, otp } = req.body;
+    if (!otpStorage[email]) {
+        return res.status(400).send({ status: false, message: 'OTP expired' });
+    }
+    if (otpStorage[email].otp !== otp) {
+        return res.status(400).send({ status: false, message: 'Invalid OTP' });
+    }
+    if (otpStorage[email].expiresAt < Date.now()) {
+        return res.status(400).send({ status: false, message: 'OTP expired' });
+    }
+    res.status(200).send({ status: true, message: 'OTP verified' });
+});
+
+app.post('/api/resetPassword', async (req, res) => {
+    const { email, password } = req.body;
+    const hash = await bcrypt.hashSync(password, 10);
+    const query = `UPDATE users SET password = ? WHERE email = ?`;
+    connection.query(query, [hash, email], (err, result) => {
+        if (err) {
+            res.status(500).send({ status: false, message: err });
+        }
+        res.status(200).send({ status: true, message: 'Password reset success' });
     });
 });
 
